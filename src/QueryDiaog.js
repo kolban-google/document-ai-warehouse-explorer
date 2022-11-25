@@ -27,6 +27,10 @@ function QueryDialog(props) {
 
   const [documentQuery, setDocumentQuery] = React.useState(props.documentQuery)
 
+  React.useEffect(() => {
+    setDocumentQuery(props.documentQuery)
+  }, [props.open])
+
   /**
    * render
    * @returns 
@@ -34,17 +38,17 @@ function QueryDialog(props) {
 
   function documentQueryOnChange(documentQuery) {
     setDocumentQuery(documentQuery)
-  }
+  } // documentQueryOnChange
 
   return (
-    <Dialog open={props.open}>
+    <Dialog open={props.open} fullWidth maxWidth="md">
       <DialogTitle>Query Settings</DialogTitle>
       <DialogContent>
         <Query schemaMap={props.schemaMap} documentQuery={documentQuery} onChange={documentQueryOnChange}/>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="primary" onClick={() => {props.close(documentQuery)}}>
-          Ok
+          Apply
         </Button>
         <Button variant="contained" color="primary" onClick={() => {props.close(null)}}>
           Cancel
@@ -56,6 +60,7 @@ function QueryDialog(props) {
 
 QueryDialog.propTypes = {
   'open': PropTypes.bool.isRequired,
+  'documentQuery': PropTypes.object.isRequired,
   'close': PropTypes.func.isRequired,
 }
 

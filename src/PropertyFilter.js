@@ -17,20 +17,29 @@ import { TextField, FormGroup } from '@mui/material'
 import PropTypes from 'prop-types';
 import SchemaSelection from './SchemaSelection.js';
 
+/**
+ * The props.value is an object that contains:
+ * {
+ *   "documentSchemaName": string
+ *   "condition": string
+ * }
+ * @param {*} props 
+ * @returns 
+ */
 function PropertyFilter(props) {
 
-  function schemaOnChange(param) {
-    props.onChange({"schema": param, "condition": props.value.condition})
+  function onSchemaChange(schemaName) {
+    props.onChange({"documentSchemaName": schemaName, "condition": props.value.condition})
   } // schemaOnChange
 
-  function conditionOnChange(ev) {
-    props.onChange({"schema": props.value.schema, "condition": ev.target.value})
+  function onConditionChange(ev) {
+    props.onChange({"documentSchemaName": props.value.documentSchemaName, "condition": ev.target.value})
   } // conditionOnChange
 
   return (
-    <FormGroup row sx={{ gap: 2 }}>
-      <SchemaSelection schemaMap={props.schemaMap} value={props.value.schema} onChange={schemaOnChange} />
-      <TextField value={props.value.condition} label="Condition" variant="standard" onChange={conditionOnChange} error={props.value.condition.trim().length === 0}/>
+    <FormGroup row sx={{ gap: 2, flexGrow: 1 }}>
+      <SchemaSelection schemaMap={props.schemaMap} value={props.value.documentSchemaName} onChange={onSchemaChange} />
+      <TextField fullWidth value={props.value.condition} label="Condition" variant="standard" onChange={onConditionChange} error={props.value.condition.trim().length === 0}/>
     </FormGroup>
   )
 } // SchemaSelection

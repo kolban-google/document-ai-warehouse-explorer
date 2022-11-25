@@ -86,13 +86,13 @@ function Main(props) {
         <Tab label="Schemas" value="3" />
 
       </TabList>
-
-      <TabPanel value="2">
-        <RulesView />
-      </TabPanel>
-      <TabPanel value="1">
+      <TabPanel value="1" sx={{flexGrow: 1}}>
         <DocumentsView />
       </TabPanel>
+      <TabPanel value="2" >
+        <RulesView />
+      </TabPanel>
+
       <TabPanel value="3">
         <SchemasView />
       </TabPanel>
@@ -100,7 +100,7 @@ function Main(props) {
   }
   return (
 
-    <Box>
+    <Box sx={{display: "flex", flexDirection: "column", height: "100%"}}>
       <AppBar position="static">
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={(evt) => { setSettingsOpen(true) }} >
@@ -128,10 +128,6 @@ function Main(props) {
 } // EntityInfoDialog
 
 Main.propTypes = {
-  'open': PropTypes.bool.isRequired,
-  'close': PropTypes.func.isRequired,
-  'selected': PropTypes.func.isRequired,
-  'settings': PropTypes.object
 }
 
 export default Main

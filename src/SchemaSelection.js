@@ -47,7 +47,7 @@ function SchemaSelection(props) {
   }
 
   return (
-    <TextField select variant="standard" sx={{ width: 300 }} value={props.value} label="Schema" onChange={onChange} error={props.value === null || props.value.length === 0}>
+    <TextField select variant="standard" fullWidth value={props.value} label="Schema" onChange={onChange} error={props.value === null || props.value.length === 0}>
       {schemaCompList}
     </TextField>
 

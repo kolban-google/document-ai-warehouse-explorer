@@ -20,6 +20,7 @@ import DocumentsGrid from './DocumentsGrid.js';
 import Query from './Query.js';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import SettingsIcon from '@mui/icons-material/Settings';
 import QueryDialog from './QueryDiaog.js';
 
 function DocumentsView(props) {
@@ -67,12 +68,12 @@ function DocumentsView(props) {
 
   return (
     <Box>
-      <p>Documents View</p>
-      <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
-      <Button onClick={() => {setQueryDialogOpen(true)}} variant="contained" endIcon={<RefreshIcon/>}>Query</Button>
-      {/*<Query schemaMap={schemaMap} documentQuery={documentQuery} onChange={documentQueryOnChange}/>*/}
       <DocumentsGrid schemaMap={schemaMap} searchResults={searchResults} onSelectionChanged={onSelectionChanged}/>
+      <Box sx={{ display: "flex", columnGap: 1 }}>
+      <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
+      <Button onClick={() => {setQueryDialogOpen(true)}} variant="contained" endIcon={<SettingsIcon/>}>Query</Button>
       <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon/>}>Delete</Button>
+      </Box>
       <QueryDialog schemaMap={schemaMap} documentQuery={documentQuery} open={queryDialogOpen} close={(documentQuery) => {
           setQueryDialogOpen(false)
         if (documentQuery !== null) {

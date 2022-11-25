@@ -13,12 +13,49 @@
 # limitations under the License.
 */
 
+/**
+ * {
+  "query": string,
+  "isNlQuery": boolean,
+  "customPropertyFilter": string,
+  "timeFilters": [
+    {
+      timeRange: {
+        startTime: string
+        endTime: string
+      },
+      timeField: TIME_FIELD_UNSPECIFIED | CREATE_TIME | UPDATE_TIME
+    }
+  ],
+  "documentSchemaNames": [
+    string
+  ],
+  "propertyFilter": [
+    {
+      documentSchemaName: string
+      condition: string
+    }
+  ],
+  "fileTypeFilter": {
+    object (FileTypeFilter)
+  },
+  "folderNameFilter": string,
+  "queryContext": [
+    string
+  ],
+  "documentCreatorFilter": [
+    string
+  ]
+}
+ */
+
 import React from 'react';
-import { Box, MenuItem, TextField, Button, IconButton, FormGroup, FormControlLabel, Switch, FormControl } from '@mui/material'
+import { Box, MenuItem, TextField, Button, IconButton, FormGroup, FormControlLabel, Switch, FormControl, Card, CardContent, CardActions, Typography, Divider } from '@mui/material'
 import PropTypes from 'prop-types';
 import PropertyFilter from './PropertyFilter';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SchemaSelection from './SchemaSelection';
+import _ from 'lodash';
 
 /**
  * props.schemaMap - Map of Schemas. (Used to build the pull-down of available schemas)
@@ -31,111 +68,15 @@ import SchemaSelection from './SchemaSelection';
 function Query(props) {
   // Build the select list
 
-  const [selectedSchemas, setSelectedSchemas] = React.useState([]);
-  const [propertyFilters, setPropertyFilters] = React.useState([]);
-  const [fileType, setFileType] = React.useState("ALL");
-  const [query, setQuery] = React.useState("");
-  const [useTime, setUseTime] = React.useState(false);
-  const [timeField, setTimeField] = React.useState("CREATE_TIME");
-  const [startTime, setStartTime] = React.useState("");
-  const [endTime, setEndTime] = React.useState("");
 
-  const didMount = React.useRef(false);
 
-  React.useEffect(() => {
-    if (!didMount.current) {
-      didMount.current = true
-      return
-    }
-    onChange()
-  }, [query, fileType, startTime, endTime, timeField, useTime, selectedSchemas])
 
-  React.useEffect(() => {
-    didMount.current = false
-    parseDocumentQuery(props.documentQuery)
-  }, [props.documentQuery])
-  // Build a DocumentQuery object as described here: https://cloud.google.com/document-warehouse/docs/reference/rest/v1/projects.locations.documents/search#DocumentQuery
-
-  /**
-   * Parse the passed in documentQuery and set the values.
-   * @param {*} documentQuery 
-   */
-  function parseDocumentQuery(documentQuery) {
-    if (documentQuery.query) {
-      setQuery(documentQuery.query)
-    }
-    if (documentQuery.timeFilters) {
-      setTimeField(documentQuery.timeFilters[0].timeField)
-      setStartTime(documentQuery.timeFilters[0].timeRange.startTime)
-      setEndTime(documentQuery.timeFilters[0].timeRange.endTime)
-      setUseTime(true)
-    } else {
-      setUseTime(false)
-    }
-    if (documentQuery.fileTypeFilter) {
-      setFileType(documentQuery.fileTypeFilter.fileType)
-    }
-    if (documentQuery.documentSchemaNames) {
-      setSelectedSchemas(documentQuery.documentSchemaNames)
-    }
-  } // parseDocumentQuery
-
-  function buildQuery() {
-    const ret = {};
-    ret.query = query;
-
-    //
-    // Set the timeFilters
-    //
-    if (useTime) {
-      ret.timeFilters = [{
-        "timeRange": {
-          "startTime": startTime,
-          "endTime": endTime
-        },
-        "timeField": timeField
-      }];
-    }
-
-    //
-    // Set the documentSchemaNames
-    //
-    if (selectedSchemas.length > 0) {
-      ret.documentSchemaNames = [];
-      selectedSchemas.forEach((item) => {
-        ret.documentSchemaNames.push(item);
-      })
-    }
-
-    //
-    // Set the propertyFilters
-    //
-    if (propertyFilters.length > 0) {
-      ret.propertyFilter = [];
-      propertyFilters.forEach((item) => {
-        ret.propertyFilter.push({
-          "condition": item.condition,
-          "documentSchemaName": item.schema.name
-        });
-      })
-    }
-
-    ret.fileTypeFilter = { "fileType": fileType }
-
-    return ret;
-  } // buildQuery
 
   /**
    * Change the query
    */
-  function onChange() {
-    const documentQuery = buildQuery()
-    try {
-    validate(documentQuery)
+  function onChange(documentQuery) {
     props.onChange(documentQuery)
-    }catch(e) {
-      console.log(e)
-    }
   } // onChange
 
 
@@ -152,135 +93,253 @@ function Query(props) {
     }
   } // validate
 
-  function propertyFilterOnChange(param, index) {
-    const newPropertyFilters = [...propertyFilters];
-    newPropertyFilters[index] = param
-    setPropertyFilters(newPropertyFilters);
-  } // propertyFilterOnChange
+  function onQueryChange(evt) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.query = evt.target.value
+    onChange(newDocumentQuery)
+  }
+  /**
+   * Change an entry in the property filters array.
+   * @param {*} param 
+   * @param {*} index 
+   */
+  function onPropertyFiltersChange(param, index) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.propertyFilters[index] = param
+    onChange(newDocumentQuery)
+  } // propertyFiltersOnChange
 
-  function onPropertyFilterAdd() {
-    const newPropertyFilters = [...propertyFilters];
-    newPropertyFilters.push({ schema: "", condition: "" })
-    setPropertyFilters(newPropertyFilters)
-  } // onPropertyFilterAdd
+  /**
+   * Add a new entry to the propertFilters array.
+   */
+  function onPropertyFiltersAdd() {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    if (!newDocumentQuery.propertyFilters) {
+      newDocumentQuery.propertyFilters = []
+    }
+    newDocumentQuery.propertyFilters.push({ "documentSchemaName": "", "condition": "" })
+    onChange(newDocumentQuery)
+  } // onPropertyFiltersAdd
 
-  function onSchemaAdd() {
-    const newSelectedSchemas = [...selectedSchemas];
-    newSelectedSchemas.push("")
-    setSelectedSchemas(newSelectedSchemas)
-  } // onSchemaAdd
+  /**
+   * Delete an entry from the propertyFilters array.
+   * @param {*} index 
+   */
 
-  function selectedSchemasOnChange(param, index) {
-    const newSelectedSchemas = [...selectedSchemas];
-    newSelectedSchemas[index] = param
-    setSelectedSchemas(newSelectedSchemas);
-  } // selectedSchemasOnChange
-
-  function deletePropertyFilter(index) {
+  function onPropertyFiltersDelete(index) {
     //console.log(`Delete ${index}`)
-    let newPropertyFilters = [...propertyFilters];
-    newPropertyFilters.splice(index, 1);
-    setPropertyFilters(newPropertyFilters)
-  } // deletePropertyFilter
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.propertyFilters.splice(index, 1);
+    if (newDocumentQuery.propertyFilters.length === 0) {
+      delete newDocumentQuery.propertyFilters
+    }
+    onChange(newDocumentQuery)
+  } // onPropertyFiltersDelete
 
-  function deleteSelectedSchema(index) {
+
+  /**
+   * Add a new entry to the documentSchemaNames property.
+   */
+  function onDocumentSchemaNamesAdd() {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    if (!newDocumentQuery.documentSchemaNames) {
+      newDocumentQuery.documentSchemaNames = []
+    }
+    newDocumentQuery.documentSchemaNames.push("")
+    onChange(newDocumentQuery)
+  } // onDocumentSchemaNamesAdd
+
+  /**
+   * Change an entry in the documentSchemaNames array.
+   * @param {*} schemaName 
+   * @param {*} index 
+   */
+  function onDocumentSchemaNamesChange(schemaName, index) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.documentSchemaNames[index] = schemaName
+    onChange(newDocumentQuery)
+  } // onDocumentSchemaNamesChange
+
+  /**
+   * Delete an entry from the documentSchemaNames array.
+   * @param {*} index 
+   */
+  function onDocumentSchemaNamesDelete(index) {
     //console.log(`Delete ${index}`)
-    let newSelectedSchemas = [...selectedSchemas];
-    newSelectedSchemas.splice(index, 1);
-    setSelectedSchemas(newSelectedSchemas)
-  } // deleteSelectedSchema
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.documentSchemaNames.splice(index, 1);
+    if (newDocumentQuery.documentSchemaNames.length === 0) {
+      delete newDocumentQuery.documentSchemaNames
+    }
+    onChange(newDocumentQuery)
+  } // onDocumentSchemaNamesDelete
+
+
+  function onUseTimeChange(evt) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    if (evt.target.checked) {
+      newDocumentQuery.timeFilters = [{
+        "timeRange": {
+          "startTime": "",
+          "endTime": ""
+        },
+        "timeField": "CREATE_TIME"
+      }]
+    } else {
+      delete newDocumentQuery.timeFilters
+    }
+    onChange(newDocumentQuery)
+  }
+
+  function onStartTimeChange(evt) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.timeFilters[0].timeRange.startTime = evt.target.value
+    onChange(newDocumentQuery)
+  }
+
+  function onEndTimeChange(evt) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.timeFilters[0].timeRange.endTime = evt.target.value
+    onChange(newDocumentQuery)
+  }
+
+  function onTimeFieldChange(evt) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.timeFilters[0].timeField = evt.target.value
+    onChange(newDocumentQuery)
+  }
 
   let propertyFiltersComponents = [];
-  propertyFilters.forEach((currentPropertyFilter, index) => {
-    propertyFiltersComponents.push(
-      <Box display="flex" gap="10px">
-        <PropertyFilter value={currentPropertyFilter} onChange={(p) => { propertyFilterOnChange(p, index) }} schemaMap={props.schemaMap} />
-        <IconButton onClick={() => { deletePropertyFilter(index) }}>
-          <DeleteIcon />
-        </IconButton>
-      </Box>)
-  })
+  if (props.documentQuery.propertyFilters) {
+    props.documentQuery.propertyFilters.forEach((currentPropertyFilter, index) => {
+      propertyFiltersComponents.push(
+        <Box flexGrow={1} display="flex" gap="10px" flexDirection="row">
+          <PropertyFilter value={currentPropertyFilter} onChange={(p) => { onPropertyFiltersChange(p, index) }} schemaMap={props.schemaMap} />
+          <IconButton onClick={() => { onPropertyFiltersDelete(index) }}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>)
+      if (index !== props.documentQuery.propertyFilters.length - 1) {
+        propertyFiltersComponents.push(<Divider />)
+      }
+    })
+  }
 
-  let selectedSchemasComponents = [];
-  selectedSchemas.forEach((currentSchema, index) => {
-    selectedSchemasComponents.push(
-      <Box display="flex" gap="10px">
-        <SchemaSelection value={currentSchema} schemaMap={props.schemaMap} onChange={(p) => { selectedSchemasOnChange(p, index) }} />
-        <IconButton onClick={() => { deleteSelectedSchema(index) }}>
-          <DeleteIcon />
-        </IconButton>
-      </Box>
-    )
-  })
+  let documentSchemaNamesComponents = [];
+  if (props.documentQuery.documentSchemaNames) {
+    props.documentQuery.documentSchemaNames.forEach((currentDocumentSchemaName, index) => {
+      documentSchemaNamesComponents.push(
+        <Box display="flex" gap="10px">
+          <SchemaSelection value={currentDocumentSchemaName} schemaMap={props.schemaMap} onChange={(p) => { onDocumentSchemaNamesChange(p, index) }} />
+          <IconButton onClick={() => { onDocumentSchemaNamesDelete(index) }}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      )
+    })
+  }
 
   return (
-    <Box>
-      Query
-      <TextField label="Query" variant="standard" value={query} onChange={(evt) => {
-        setQuery(evt.target.value)
-      }} />
-      <p>Schemas</p>
-      <Button variant="contained" onClick={onSchemaAdd}>Add</Button>
-      <Box display="flex" gap="10px" flexDirection="column">
-        {selectedSchemasComponents}
-      </Box>
-      <p>Property Filters:</p>
-      <Button variant="contained" onClick={onPropertyFilterAdd}>Add</Button>
-      <Box display="flex" gap="10px" flexDirection="column">
-        {propertyFiltersComponents}
-      </Box>
-      <p>FileType</p>
+    <Box display="flex" gap="10px" flexDirection="column">
+      <Card>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Query
+          </Typography>
+          <TextField fullWidth label="Query" variant="standard" value={props.documentQuery.query} onChange={onQueryChange} />
+        </CardContent>
+      </Card>
 
-      <TextField sx={{ width: 150 }} variant="standard" select value={fileType} label="FileType" onChange={(param) => { setFileType(param.target.value) }}>
-        <MenuItem value="ALL">All</MenuItem>
-        <MenuItem value="FOLDER">Folder</MenuItem>
-        <MenuItem value="DOCUMENT">Document</MenuItem>
-      </TextField>
+      <Card>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Schemas
+          </Typography>
+          <Box display="flex" gap="10px" flexDirection="column">
+            {documentSchemaNamesComponents}
+          </Box>
+        </CardContent>
+        <CardActions>
+          <Button variant="contained" onClick={onDocumentSchemaNamesAdd}>Add</Button>
+        </CardActions>
+      </Card>
 
-      <p>TimeFilter</p>
-      <FormControl component="fieldset" variant="filled">
-        <FormGroup row sx={{ gap: 2 }}>
-          <FormGroup>
-            <FormControlLabel control={<Switch checked={useTime} onChange={(evt) => { setUseTime(evt.target.checked); }} />} label="Use" />
-          </FormGroup>
 
+      <Card>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Property Filters
+          </Typography>
+          <Box display="flex" gap="10px" flexDirection="column">
+            {propertyFiltersComponents}
+          </Box>
+        </CardContent>
+        <CardActions>
+          <Button variant="contained" onClick={onPropertyFiltersAdd}>Add</Button>
+        </CardActions>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            File Type
+          </Typography>
+          <TextField sx={{ width: 150 }} variant="standard" select value={props.documentQuery.fileTypeFilter ? props.documentQuery.fileTypeFilter.fileType : "ALL"} label="FileType" onChange={(evt) => {
+            const newDocumentQuery = _.cloneDeep(props.documentQuery)
+            newDocumentQuery.fileTypeFilter = { "fileType": evt.target.value }
+            onChange(newDocumentQuery)
+          }}>
+            <MenuItem value="ALL">All</MenuItem>
+            <MenuItem value="FOLDER">Folder</MenuItem>
+            <MenuItem value="DOCUMENT">Document</MenuItem>
+          </TextField>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Time Filter
+          </Typography>
+          <Box display="flex" gap="10px" flexDirection="column">
           <TextField
-            onChange={(evt) => {
-              setStartTime(evt.target.value)
-            }}
-            value={startTime}
+          fullWidth
+            onChange={onStartTimeChange}
+            value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.startTime : ""}
             variant="standard"
             label="Start Time"
             type="datetime-local"
-            disabled={!useTime}
-            sx={{ width: 250 }}
+            disabled={!props.documentQuery.timeFilters}
             InputLabelProps={{
               shrink: true,
             }}
-            error={useTime && (!startTime || startTime.length === 0)}
+            error={props.documentQuery.timeFilters && props.documentQuery.timeFilters[0].timeRange.startTime.length === 0}
           />
           <TextField
-            onChange={(evt) => {
-              setEndTime(evt.target.value)
-            }}
-            value={endTime}
+          fullWidth
+            onChange={onEndTimeChange}
+            value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.endTime : ""}
             variant="standard"
             label="End Time"
             type="datetime-local"
-            disabled={!useTime}
-            sx={{ width: 250 }}
+            disabled={!props.documentQuery.timeFilters}
             InputLabelProps={{
               shrink: true,
             }}
-            error={useTime && (!endTime || endTime.length === 0)}
+            error={props.documentQuery.timeFilters && props.documentQuery.timeFilters[0].timeRange.endTime.length === 0}
           />
-          <TextField variant="standard" select value={timeField} label="TimeField" disabled={!useTime} onChange={(param) => { setTimeField(param.target.value) }}>
+          <TextField variant="standard" select value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeField : ""} label="TimeField" disabled={!props.documentQuery.timeFilters} onChange={onTimeFieldChange}>
             <MenuItem value="CREATE_TIME">Create Time</MenuItem>
             <MenuItem value="UPDATE_TIME">Update Time</MenuItem>
           </TextField>
-
-        </FormGroup>
-      </FormControl>
+          </Box>
+        </CardContent>
+        <CardActions>
+          <FormGroup>
+            <FormControlLabel control={<Switch checked={props.documentQuery.timeFilters} onChange={onUseTimeChange} />} label="Use" />
+          </FormGroup>
+        </CardActions>
+      </Card>
     </Box>
   )
 
@@ -288,6 +347,7 @@ function Query(props) {
 
 Query.propTypes = {
   "schemaMap": PropTypes.object,
+  "documentQuery": PropTypes.object,
   "onChange": PropTypes.func.isRequired
 }
 

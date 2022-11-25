@@ -30,7 +30,7 @@ import JSONDialog from './JSONDialog.js';
 function DocumentsGrid(props) {
 
   const [jsonDialogOpen, setJsonDialogOpen] = React.useState(false)
-  const [documentInfo, setDocumentInfo] = React.useState({})   
+  const [documentInfo, setDocumentInfo] = React.useState({})
 
   async function onInfoClick(param) {
     // param.row.document.name = Identity of the Document
@@ -46,7 +46,7 @@ function DocumentsGrid(props) {
     {
       field: "info", headerName: "", width: 50, renderCell: (param) => {
         return (
-          <IconButton onClick={() => {onInfoClick(param)}}>
+          <IconButton onClick={() => { onInfoClick(param) }}>
             <InfoIcon />
           </IconButton>
         )
@@ -101,23 +101,20 @@ function DocumentsGrid(props) {
   }
   //debugger;
   return (
-    <Box>
-
-      <p>Documents Grid</p>
-      <Box height="400px">
-        <DataGrid
-          rows={props.searchResults && props.searchResults.matchingDocuments?props.searchResults.matchingDocuments:[]}
-          columns={columns}
-          pageSize={20}
-          rowsPerPageOptions={[20]}
-          checkboxSelection
-          disableSelectionOnClick
-          getRowId={getRowId}
-          onSelectionModelChange={onSelectionModelChange}
-        />
-      </Box>
-      <JSONDialog title="Document JSON" jsonData={documentInfo} open={jsonDialogOpen} close={() => {setJsonDialogOpen(false)}} data={{}}/>
+    <Box height="400px">
+      <DataGrid
+        rows={props.searchResults && props.searchResults.matchingDocuments ? props.searchResults.matchingDocuments : []}
+        columns={columns}
+        pageSize={20}
+        rowsPerPageOptions={[20]}
+        checkboxSelection
+        disableSelectionOnClick
+        getRowId={getRowId}
+        onSelectionModelChange={onSelectionModelChange}
+      />
+      <JSONDialog title="Document JSON" jsonData={documentInfo} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} data={{}} />
     </Box>
+
   )
 }
 
