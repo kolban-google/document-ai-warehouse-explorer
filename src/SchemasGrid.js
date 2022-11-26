@@ -18,9 +18,11 @@ import DAW from './daw.js'
 import { Box, IconButton } from '@mui/material'
 import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
-import InfoIcon from '@mui/icons-material/Info';
-import JSONDialog from './JSONDialog.js';
 
+import JSONDialog from './JSONDialog.js';
+import SchemaDetailsDialog from './SchemaDetailsDialog.js';
+import InfoIcon from '@mui/icons-material/Info';
+import EditIcon from '@mui/icons-material/Edit';
 
 /**
  * props.schemaMap = Map of schemas
@@ -31,7 +33,8 @@ import JSONDialog from './JSONDialog.js';
 function SchemasGrid(props) {
 
   const [jsonDialogOpen, setJsonDialogOpen] = useState(false)
-  const [schemaInfo, setSchemaInfo] = useState({})  
+  const [schemaInfo, setSchemaInfo] = useState({ "name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: [] })
+  const [schemaDetailsDialogOpen, setSchemaDetailsDialogOpen] = useState(false)
 
   async function onInfoClick(param) {
     const result = await DAW.getSchema(param.row.name)
@@ -39,12 +42,27 @@ function SchemasGrid(props) {
     setJsonDialogOpen(true)
   } // onInfoClick
 
+  async function onEditClick(param) {
+    const result = await DAW.getSchema(param.row.name)
+    setSchemaInfo(result)
+    setSchemaDetailsDialogOpen(true)
+  } // onEditClick
+
   const columns = [
     {
       "field": "info", "headerName": "", "width": 50, "renderCell": (param) => {
         return (
-          <IconButton onClick={() => {onInfoClick(param)}}>
+          <IconButton onClick={() => { onInfoClick(param) }}>
             <InfoIcon />
+          </IconButton>
+        )
+      }
+    },
+    {
+      "field": "edit", "headerName": "", "width": 50, "renderCell": (param) => {
+        return (
+          <IconButton onClick={() => { onEditClick(param) }}>
+            <EditIcon />
           </IconButton>
         )
       }
@@ -72,21 +90,25 @@ function SchemasGrid(props) {
   }
 
   return (
-    <Box>
-      <p>Schemas Grid</p>
-      <Box height="400px">
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={20}
-          rowsPerPageOptions={[20]}
-          checkboxSelection
-          disableSelectionOnClick
-          getRowId={getRowId}
-          onSelectionModelChange={onSelectionModelChange}
-        />
-      </Box>
-      <JSONDialog title="Schema JSON" jsonData={schemaInfo} open={jsonDialogOpen} close={() => {setJsonDialogOpen(false)}} data={{}}/>
+
+    <Box sx={{flexGrow: 1, height: "100%"}}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSize={20}
+        rowsPerPageOptions={[20]}
+        checkboxSelection
+        disableSelectionOnClick
+        getRowId={getRowId}
+        onSelectionModelChange={onSelectionModelChange}
+      />
+      <JSONDialog title="Schema JSON" jsonData={schemaInfo} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} data={{}} />
+      <SchemaDetailsDialog documentSchema={schemaInfo} open={schemaDetailsDialogOpen} close={(documentSchema) => {
+        setSchemaDetailsDialogOpen(false)
+        if (documentSchema) {
+          DAW.patchSchema(documentSchema)
+        }
+      }} />
     </Box>
   )
 } // SchemasGrid

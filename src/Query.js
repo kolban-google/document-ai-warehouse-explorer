@@ -67,11 +67,7 @@ import _ from 'lodash';
  */
 function Query(props) {
   // Build the select list
-
-
-
-
-
+  
   /**
    * Change the query
    */
@@ -136,6 +132,38 @@ function Query(props) {
     onChange(newDocumentQuery)
   } // onPropertyFiltersDelete
 
+
+  /**
+   * Add a new entry to the documentCreatorFilter property.
+   */
+  function onDocumentCreatorFilterAdd() {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    if (!newDocumentQuery.documentCreatorFilter) {
+      newDocumentQuery.documentCreatorFilter = []
+    }
+    newDocumentQuery.documentCreatorFilter.push("")
+    onChange(newDocumentQuery)
+  } // onDocumentCreatorFilterAdd
+
+  function onDocumentCreatorFilterChange(creator, index) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.documentCreatorFilter[index] = creator
+    onChange(newDocumentQuery)
+  } // onDocumentCreatorFilterChange
+
+
+  /**
+   * Delete a document creator filter
+   * @param {*} index 
+   */
+  function onDocumentCreatorFilterDelete(index) {
+    const newDocumentQuery = _.cloneDeep(props.documentQuery)
+    newDocumentQuery.documentCreatorFilter.splice(index, 1);
+    if (newDocumentQuery.documentCreatorFilter.length === 0) {
+      delete newDocumentQuery.documentCreatorFilter
+    }
+    onChange(newDocumentQuery)
+  } // onDocumentCreatorFilterDelete
 
   /**
    * Add a new entry to the documentSchemaNames property.
@@ -239,6 +267,21 @@ function Query(props) {
     })
   }
 
+  // Create a component list for each of the (possible) document creators
+  let documentCreatorFilterComponents = [];
+  if (props.documentQuery.documentCreatorFilter) {
+    props.documentQuery.documentCreatorFilter.forEach((currentDocumentCreatorFilter, index) => {
+      documentCreatorFilterComponents.push(
+        <Box display="flex" gap="10px">
+          <TextField fullWidth variant="standard" value={currentDocumentCreatorFilter} onChange={(evt) => { onDocumentCreatorFilterChange(evt.target.value, index) }} error={currentDocumentCreatorFilter.length === 0} />
+          <IconButton onClick={() => { onDocumentCreatorFilterDelete(index) }}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      )
+    })
+  }
+
   return (
     <Box display="flex" gap="10px" flexDirection="column">
       <Card>
@@ -302,42 +345,57 @@ function Query(props) {
             Time Filter
           </Typography>
           <Box display="flex" gap="10px" flexDirection="column">
-          <TextField
-          fullWidth
-            onChange={onStartTimeChange}
-            value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.startTime : ""}
-            variant="standard"
-            label="Start Time"
-            type="datetime-local"
-            disabled={!props.documentQuery.timeFilters}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            error={props.documentQuery.timeFilters && props.documentQuery.timeFilters[0].timeRange.startTime.length === 0}
-          />
-          <TextField
-          fullWidth
-            onChange={onEndTimeChange}
-            value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.endTime : ""}
-            variant="standard"
-            label="End Time"
-            type="datetime-local"
-            disabled={!props.documentQuery.timeFilters}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            error={props.documentQuery.timeFilters && props.documentQuery.timeFilters[0].timeRange.endTime.length === 0}
-          />
-          <TextField variant="standard" select value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeField : ""} label="TimeField" disabled={!props.documentQuery.timeFilters} onChange={onTimeFieldChange}>
-            <MenuItem value="CREATE_TIME">Create Time</MenuItem>
-            <MenuItem value="UPDATE_TIME">Update Time</MenuItem>
-          </TextField>
+            <TextField
+              fullWidth
+              onChange={onStartTimeChange}
+              value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.startTime : ""}
+              variant="standard"
+              label="Start Time"
+              type="datetime-local"
+              disabled={!props.documentQuery.timeFilters}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              error={props.documentQuery.timeFilters && props.documentQuery.timeFilters[0].timeRange.startTime.length === 0}
+            />
+            <TextField
+              fullWidth
+              onChange={onEndTimeChange}
+              value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.endTime : ""}
+              variant="standard"
+              label="End Time"
+              type="datetime-local"
+              disabled={!props.documentQuery.timeFilters}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              error={props.documentQuery.timeFilters && props.documentQuery.timeFilters[0].timeRange.endTime.length === 0}
+            />
+            <TextField variant="standard" select value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeField : ""} label="TimeField" disabled={!props.documentQuery.timeFilters} onChange={onTimeFieldChange}>
+              <MenuItem value="CREATE_TIME">Create Time</MenuItem>
+              <MenuItem value="UPDATE_TIME">Update Time</MenuItem>
+            </TextField>
           </Box>
         </CardContent>
         <CardActions>
           <FormGroup>
             <FormControlLabel control={<Switch checked={props.documentQuery.timeFilters} onChange={onUseTimeChange} />} label="Use" />
           </FormGroup>
+        </CardActions>
+      </Card>
+
+      {/* Document Creator Filter */}
+      <Card>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            Document Creator
+          </Typography>
+          <Box display="flex" gap="10px" flexDirection="column">
+            {documentCreatorFilterComponents}
+          </Box>
+        </CardContent>
+        <CardActions>
+          <Button variant="contained" onClick={onDocumentCreatorFilterAdd}>Add</Button>
         </CardActions>
       </Card>
     </Box>

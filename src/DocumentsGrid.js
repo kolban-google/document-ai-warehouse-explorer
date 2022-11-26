@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
 import InfoIcon from '@mui/icons-material/Info';
 import JSONDialog from './JSONDialog.js';
-
+import DocumentDetailsDialog from './DocumentDetailsDialog.js';
 
 /**
  * props.schemaMap = Map of schemas
@@ -30,6 +30,7 @@ import JSONDialog from './JSONDialog.js';
 function DocumentsGrid(props) {
 
   const [jsonDialogOpen, setJsonDialogOpen] = React.useState(false)
+  const [documentDetailsDialogOpen, setDocumentDetailsDialogOpen] = React.useState(false)
   const [documentInfo, setDocumentInfo] = React.useState({})
 
   async function onInfoClick(param) {
@@ -40,7 +41,13 @@ function DocumentsGrid(props) {
     }
     setDocumentInfo(result)
     setJsonDialogOpen(true)
-  }
+  } // onInfoClick
+
+  async function onEditClick(param) {
+    const result = await DAW.getDocument(param.row.document.name)
+    setDocumentInfo(result)
+    setDocumentDetailsDialogOpen(true)
+  } // onEditClick
 
   const columns = [
     {
@@ -53,19 +60,22 @@ function DocumentsGrid(props) {
       }
     },
     {
-      field: 'document.name', headerName: 'name', width: 200, valueGetter: (param) => {
-        //debugger;
-        return DAW.getDocumentId(param.row.document.name)
+      field: "edit", headerName: "", width: 50, renderCell: (param) => {
+        return (
+          <IconButton onClick={() => { onEditClick(param) }}>
+            <InfoIcon />
+          </IconButton>
+        )
+      }
+    },
+    {
+      field: 'document.name', headerName: 'name', width: 300, valueGetter: (param) => {
+        return `${param.row.document.displayName} (${DAW.getDocumentId(param.row.document.name)})`
       }
     },
     {
       field: 'searchTextSnippet', headerName: 'snippet', width: 200, valueGetter: (param) => {
         return param.row.searchTextSnippet
-      }
-    },
-    {
-      field: 'document.displayName', headerName: 'display', width: 200, valueGetter: (param) => {
-        return param.row.document.displayName
       }
     },
     {
@@ -93,15 +103,14 @@ function DocumentsGrid(props) {
     if (props.onSelectionChanged) {
       props.onSelectionChanged(selectionArray)
     }
-  }
+  } // onSelectionModelChange
 
   function getRowId(row) {
-    //debugger;
     return row.document.name;
-  }
-  //debugger;
+  } // getRowId
+
   return (
-    <Box height="400px">
+    <Box sx={{flexGrow: 1, height: "100%"}}>
       <DataGrid
         rows={props.searchResults && props.searchResults.matchingDocuments ? props.searchResults.matchingDocuments : []}
         columns={columns}
@@ -112,15 +121,17 @@ function DocumentsGrid(props) {
         getRowId={getRowId}
         onSelectionModelChange={onSelectionModelChange}
       />
-      <JSONDialog title="Document JSON" jsonData={documentInfo} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} data={{}} />
+      <JSONDialog title="Document JSON" jsonData={documentInfo} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }}/>
+      <DocumentDetailsDialog document={documentInfo} schemaMap={props.schemaMap} open={documentDetailsDialogOpen} close={(newDocument) => {
+        setDocumentDetailsDialogOpen(false)
+      }}/>
     </Box>
-
   )
 }
 
 DocumentsGrid.propTypes = {
-  onSelectionChanged: PropTypes.func,
-  schemaMap: PropTypes.object
+  "onSelectionChanged": PropTypes.func,
+  "schemaMap": PropTypes.object
 }
 
 export default DocumentsGrid

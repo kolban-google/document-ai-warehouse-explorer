@@ -15,7 +15,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Box, Grid, IconButton, Typography, TextField, Button, List, ListItem, Table, TableRow, TableHead, TableCell, TableBody, TableContainer } from '@mui/material'
-import BQ from './bq.js'
 import PropTypes from 'prop-types';
 import Rule from './rule.js';
 

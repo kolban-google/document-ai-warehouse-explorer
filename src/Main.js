@@ -14,7 +14,7 @@
 */
 import React from 'react';
 import { useState } from 'react';
-import { Box, AppBar, IconButton, Typography, Toolbar, Button, Tab, Menu, MenuItem, Tabs } from '@mui/material'
+import { Box, AppBar, IconButton, Typography, Toolbar, Button, Tab, Menu, MenuItem } from '@mui/material'
 import { TabPanel, TabContext, TabList } from '@mui/lab';
 import MenuIcon from '@mui/icons-material/Menu';
 import HelpIcon from '@mui/icons-material/Help';
@@ -78,29 +78,29 @@ function Main(props) {
       <Box>Not logged in</Box>
     )
   } else {
-    body = (<TabContext value={tabIndex}>
-      <TabList onChange={(event, newValue) => setTabIndex(newValue)}
-        textColor="inherit">
-        <Tab label="Documents" value="1" />
-        <Tab label="Rules" value="2" />
-        <Tab label="Schemas" value="3" />
+    body = (
+      <TabContext value={tabIndex}>
+        <TabList onChange={(event, newValue) => setTabIndex(newValue)}
+          textColor="inherit">
+          <Tab label="Documents" value="1" />
+          <Tab label="Rules" value="2" />
+          <Tab label="Schemas" value="3" />
+        </TabList>
 
-      </TabList>
-      <TabPanel value="1" sx={{flexGrow: 1}}>
-        <DocumentsView />
-      </TabPanel>
-      <TabPanel value="2" >
-        <RulesView />
-      </TabPanel>
-
-      <TabPanel value="3">
-        <SchemasView />
-      </TabPanel>
-    </TabContext>)
+        <TabPanel value="1" sx={{ flexGrow: 1 }}>
+          <DocumentsView />
+        </TabPanel>
+        <TabPanel value="2" >
+          <RulesView />
+        </TabPanel>
+        <TabPanel value="3" sx={{ flexGrow: 1 }}>
+          <SchemasView />
+        </TabPanel>
+      </TabContext>)
   }
   return (
 
-    <Box sx={{display: "flex", flexDirection: "column", height: "100%"}}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <AppBar position="static">
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={(evt) => { setSettingsOpen(true) }} >
@@ -117,6 +117,7 @@ function Main(props) {
       </AppBar>
       {body}
       <SettingsDialog open={settingsOpen} close={settingsClosed} settings={settings} />
+
       <Menu
         anchorEl={mainMenuAnchorEl}
         open={Boolean(mainMenuAnchorEl)}

@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 let gapi = window.gapi;
 let currentProjectId = ""
 let currentProjectNumber = ""
@@ -62,6 +64,35 @@ async function getSchema(schemaName) {
   return response.result
 } // getSchema
 
+async function createSchema(documentSchema) {
+  const newDocumentSchema = _.cloneDeep(documentSchema)
+  delete newDocumentSchema.updateTime
+  delete newDocumentSchema.createTime
+  delete newDocumentSchema.name
+  newDocumentSchema.parent = `projects/${currentProjectNumber}/locations/us`
+  const response = await gapi.client.contentwarehouse.projects.locations.documentSchemas.create(newDocumentSchema);
+  return response.result
+}
+
+async function deleteSchema(documentSchemaName) {
+  const params = {
+    "name": documentSchemaName
+  }
+  await gapi.client.contentwarehouse.projects.locations.documentSchemas.delete(params);
+}
+
+async function patchSchema(documentSchema) {
+  const newDocumentSchema = _.cloneDeep(documentSchema)
+  delete newDocumentSchema.updateTime
+  delete newDocumentSchema.createTime
+  const params = {
+    name: documentSchema.name,
+    documentSchema: documentSchema
+  }
+  const response = await gapi.client.contentwarehouse.projects.locations.documentSchemas.patch(params);
+  return response.result
+}
+
 //
 // DOCUMENTS
 //
@@ -121,7 +152,7 @@ function getRuleSetId(parent) {
  * @param {*} projectId 
  * @returns The rules returned from the list rules request
  */
- async function listRules(projectId) {
+async function listRules(projectId) {
   if (projectId === null || projectId === undefined) {
     projectId = currentProjectId;
   }
@@ -175,5 +206,5 @@ async function rulesCreate(ruleSet) {
 //
 // Exports
 //
-const exports = { setProjectId, listRules, queryDocuments, getDocumentId, getSchemaId, getRuleSetId, getSchema, listSchemas, deleteDocument, getDocument, getRuleSet, deleteRuleSet, setProjectNumber }
+const exports = { setProjectId, listRules, queryDocuments, getDocumentId, getSchemaId, getRuleSetId, getSchema, createSchema, deleteSchema, patchSchema, listSchemas, deleteDocument, getDocument, getRuleSet, deleteRuleSet, setProjectNumber }
 export default exports;

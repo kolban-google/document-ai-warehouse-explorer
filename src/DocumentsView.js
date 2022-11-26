@@ -17,69 +17,100 @@ import DAW from './daw.js'
 import { Box, Button } from '@mui/material'
 import PropTypes from 'prop-types';
 import DocumentsGrid from './DocumentsGrid.js';
-import Query from './Query.js';
+import QueryDialog from './QueryDialog.js';
+// Icons
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SettingsIcon from '@mui/icons-material/Settings';
-import QueryDialog from './QueryDiaog.js';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DocumentDetailsDialog from './DocumentDetailsDialog.js';
+
+const newDocumentTemplate = {
+  "name": "",
+  "referenceId": "",
+  "displayName": "",
+  "title": "",
+  "displayUri": "",
+  "documentSchemaName": "",
+  "structuredContentUri": "",
+  "updateTime": "",
+  "createTime": "",
+  "textExtractionDisabled": false,
+  "creator": "",
+  "updater": ""
+}
 
 function DocumentsView(props) {
   const [searchResults, setSearchResults] = React.useState(null);
   const [selection, setSelection] = React.useState([]);
   const [schemaMap, setSchemaMap] = React.useState(new Map());
-  const [documentQuery, setDocumentQuery] = React.useState({"query": ""})
+  const [documentQuery, setDocumentQuery] = React.useState({ "query": "" })
   const [queryDialogOpen, setQueryDialogOpen] = React.useState(false)
+  const [documentDetailsDialogOpen, setDocumentDetailsDialogOpen] = React.useState(false)
+  const [newDocument, setNewDocument] = React.useState(newDocumentTemplate)
 
   const initied = React.useRef(false);
 
-
   // We want a first time initialization
   if (initied.current === false) {
-    DAW.listSchemas({makeMap: true}).then((result) => {
+    DAW.listSchemas({ makeMap: true }).then((result) => {
       initied.current = true
       setSchemaMap(result)
     })
   }
 
+  /**
+   * Refresh the documents in the table.
+   */
   async function onRefresh() {
     const results = await DAW.queryDocuments(documentQuery);
     setSearchResults(results);
   } // onRefresh
 
+  /**
+   * Remember that the selection has changed.
+   * @param {*} selection 
+   */
   function onSelectionChanged(selection) {
     setSelection(selection)
   } // onSelectionChanged
 
+  /**
+   * Handle document deletions
+   */
   async function onDelete() {
-    for (let i=0; i<selection.length; i++) {
+    for (let i = 0; i < selection.length; i++) {
       await DAW.deleteDocument(selection[i])
     }
     onRefresh()
   } // onDelete
 
-  /**
-   * Called when the documentQuery object changes.
-   * @param {*} documentQuery 
-   */
-  function documentQueryOnChange(documentQuery) {
-    //debugger;
-    setDocumentQuery(documentQuery)
-  } // documentQueryOnChange
+  function createDocument() {
+    debugger;
+  }
 
   return (
-    <Box>
-      <DocumentsGrid schemaMap={schemaMap} searchResults={searchResults} onSelectionChanged={onSelectionChanged}/>
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
+      <DocumentsGrid schemaMap={schemaMap} searchResults={searchResults} onSelectionChanged={onSelectionChanged} />
       <Box sx={{ display: "flex", columnGap: 1 }}>
-      <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
-      <Button onClick={() => {setQueryDialogOpen(true)}} variant="contained" endIcon={<SettingsIcon/>}>Query</Button>
-      <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon/>}>Delete</Button>
+        <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon />}>Delete</Button>
+        <Button onClick={() => { setQueryDialogOpen(true) }} variant="contained" endIcon={<SettingsIcon />}>Query</Button>
+        <Button onClick={() => { setDocumentDetailsDialogOpen(true) }} variant="contained" endIcon={<AddCircleIcon />}>Create</Button>
+        <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon />}>Refresh</Button>
       </Box>
       <QueryDialog schemaMap={schemaMap} documentQuery={documentQuery} open={queryDialogOpen} close={(documentQuery) => {
-          setQueryDialogOpen(false)
+        setQueryDialogOpen(false)
         if (documentQuery !== null) {
           setDocumentQuery(documentQuery)
         }
-      }}/>
+      }} showQuery={true} />
+      <DocumentDetailsDialog document={newDocument} create={true} schemaMap={schemaMap} open={documentDetailsDialogOpen}
+        close={(newDocument) => {
+          setDocumentDetailsDialogOpen(false)
+          if (newDocument) {
+            createDocument(newDocument)
+          }
+        }} />
     </Box>
   )
 } // DocumentsView

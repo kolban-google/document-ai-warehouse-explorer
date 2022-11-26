@@ -19,15 +19,10 @@ import PropTypes from 'prop-types';
 import ReactJson from 'react-json-view'
 
 /**
- * Display the settings
+ * Display the JSON object
  * 
  */
 function JSONDialog(props) {
-
-  /**
-   * render
-   * @returns 
-   */
 
   return (
     <Dialog open={props.open}>

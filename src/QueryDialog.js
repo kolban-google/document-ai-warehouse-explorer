@@ -17,6 +17,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
 import PropTypes from 'prop-types';
 import ReactJson from 'react-json-view'
+import JSONDialog from './JSONDialog';
 import Query from './Query';
 
 /**
@@ -26,6 +27,7 @@ import Query from './Query';
 function QueryDialog(props) {
 
   const [documentQuery, setDocumentQuery] = React.useState(props.documentQuery)
+  const [jsonDialogOpen, setJsonDialogOpen] = React.useState(false)
 
   React.useEffect(() => {
     setDocumentQuery(props.documentQuery)
@@ -44,16 +46,22 @@ function QueryDialog(props) {
     <Dialog open={props.open} fullWidth maxWidth="md">
       <DialogTitle>Query Settings</DialogTitle>
       <DialogContent>
-        <Query schemaMap={props.schemaMap} documentQuery={documentQuery} onChange={documentQueryOnChange}/>
+        <Query schemaMap={props.schemaMap} documentQuery={documentQuery} onChange={documentQueryOnChange} />
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="primary" onClick={() => {props.close(documentQuery)}}>
+        {props.showQuery ?
+          <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>
+            Show
+          </Button>
+          : null}
+        <Button variant="contained" color="primary" onClick={() => { props.close(documentQuery) }}>
           Apply
         </Button>
-        <Button variant="contained" color="primary" onClick={() => {props.close(null)}}>
+        <Button variant="contained" color="primary" onClick={() => { props.close(null) }}>
           Cancel
         </Button>
       </DialogActions>
+      <JSONDialog title="Query JSON" jsonData={documentQuery} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} data={{}} />
     </Dialog>
   );
 }
@@ -62,6 +70,7 @@ QueryDialog.propTypes = {
   'open': PropTypes.bool.isRequired,
   'documentQuery': PropTypes.object.isRequired,
   'close': PropTypes.func.isRequired,
+  "showQuery": PropTypes.bool
 }
 
 export default QueryDialog;

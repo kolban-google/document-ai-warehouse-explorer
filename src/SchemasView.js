@@ -18,15 +18,17 @@ import DAW from './daw.js'
 import { Box, Button } from '@mui/material'
 import PropTypes from 'prop-types';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SchemasGrid from './SchemasGrid.js';
+import SchemaDetailsDialog from './SchemaDetailsDialog.js';
 
 function SchemasView(props) {
   const [searchResults, setSearchResults] = React.useState(null);
   const [selection, setSelection] = React.useState([]);
   const [schemas, setSchemas] = React.useState(new Map());
-
-
+  const [schemaDetailsDialogOpen, setSchemaDetailsDialogOpen] = React.useState(false);
+  const [newDocumentSchema, setNewDocumentSchema] = useState({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})  
 
   async function onRefresh() {
     const results = await DAW.listSchemas();
@@ -37,6 +39,16 @@ function SchemasView(props) {
     setSelection(selection)
   } // onSelectionChanged
 
+  function onCreate() {
+    setNewDocumentSchema({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})
+    setSchemaDetailsDialogOpen(true)
+  }
+
+  async function createSchema(newSchema) {
+    await DAW.createSchema(newSchema)
+    onRefresh()
+  }
+
   async function onDelete() {
     for (let i=0; i<selection.length; i++) {
       await DAW.deleteSchema(selection[i])
@@ -45,11 +57,19 @@ function SchemasView(props) {
   } // onDelete
 
   return (
-    <Box>
-      <p>Schemas View</p>
-      <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
+    <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
       <SchemasGrid schemaMap={schemas} searchResults={searchResults} onSelectionChanged={onSelectionChanged}/>
+      <Box sx={{ display: "flex", columnGap: 1 }}>
       <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon/>}>Delete</Button>
+      <Button onClick={onCreate} variant="contained" endIcon={<AddCircleIcon/>}>Create</Button>
+      <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
+      </Box>
+      <SchemaDetailsDialog documentSchema={newDocumentSchema} open={schemaDetailsDialogOpen} close={(newSchema) => {
+        setSchemaDetailsDialogOpen(false)
+        if (newSchema) {
+          createSchema(newSchema)
+        }
+      }} create={true}/>
     </Box>
   )
 } // DocumentsView
