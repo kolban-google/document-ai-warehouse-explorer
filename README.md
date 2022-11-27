@@ -1,70 +1,36 @@
-# Getting Started with Create React App
+# Document AI Warehouse Explorer
+Document AI Warehouse is an offering from Google Cloud that provides document storage, search and a rich array of other services.  The product provides APIs for ingesting documents, creating schemas, searching and more.  While Google provides a first class user interface, it is also possible for enterprises to build their own custom interaction applications.  Following that notion, I wanted to see what would be involved in building such an interface.  The results are contained in this repository.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The user interface technology used here is [REACT](https://reactjs.org/) with the [Material UI](https://mui.com/) set of components.
 
-## Available Scripts
+This project is very much a *work in progress* and isn't yet considered complete.  My own UI design skills are not great and I'm still learning REACT and MUI.  From a function perspective, there is still much that can be added and I look forward to hearing from you on what you like to see added/tweaked.
 
-In the project directory, you can run:
+If you are a developer and are working with Document AI Warehouse, here are some possible reasons you might want to give this project a spin:
 
-### `npm start`
+* There is a UI for building schemas that includes building properties.  In the current Google UI, one must supply JSON to describe the details of the schema and that is error prone.  The UI in this tool provides clear guidance.
+* When creating a document, we can supply direct plain text that is useful for testing.
+* When querying documents, there are a variety of options that can be supplied.  At the API level, these can be quite complex.  The project provides a UI for building a search query.
+* Most of the parameters (input and output) can be viewed in a JSON dialog and optionally copied to your clipboard.  This means that you can use this tool during development to examine the underlying document and schema data as well as build requests using the UIs.
+* Because REACT is UI component driven, one can lift some of the components in this project and leverage in your own UIs.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Running the project
+The project is hosted in Github.  As part of Github, there is a concept called [Github Pages](https://pages.github.com/).  This is the ability to host your own web pages that are served from Github itself.  This project leverages that notion so you can run a build of this project without having to install anything locally.  Simply visit:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+https://kolban-google.github.io/document-ai-warehouse-explorer/
 
-### `npm test`
+... and you should be running.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Setup for usage
+Once the project is launched, you must perform a one-time setup.  Click the settings icon (hamburger button in the menu bar) and you will be prompted for three inputs:
 
-### `npm run build`
+* Project ID - The Project ID that you will authenticate against.
+* Project Number - The Project Number that is hosting Document AI Warehouse.
+* User - The user name (email address) that is used for Document AI Warehouse ACL security.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Once entered, these are saved in the local storage of your browser and will be remembered.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Next, click the `Sign-In` button found on the top menu.  Select a Google Account that has been given the IAM role called:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+`Content Warehouse Admin`
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+You are now ready to play.  You can view documents, schemas, rules.  For documents you can see their details, build queries, run searches and create new ones.  Similar for schemas.
