@@ -13,10 +13,9 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { Box, Grid, IconButton, Typography, TextField, Button, List, ListItem, Table, TableRow, TableHead, TableCell, TableBody, TableContainer } from '@mui/material'
-import PropTypes from 'prop-types';
-import Rule from './rule.js';
+import { Box, Grid,  TextField } from '@mui/material'
+//import PropTypes from 'prop-types';
+import Rule from '../rule.js';
 
 function RuleSet(props) {
 
@@ -40,7 +39,9 @@ function RuleSet(props) {
   )
 } // 
 
+/*
 RuleSet.propTypes = {
 }
+*/
 
-export default RuleSet
+export default RuleSet 

@@ -13,13 +13,12 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
-import DAW from './daw.js'
+import DAW from '../daw.js'
 import { Box, IconButton } from '@mui/material'
 import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
 import InfoIcon from '@mui/icons-material/Info';
-import JSONDialog from './JSONDialog.js';
+import JSONDialog from '../JSONDialog.js';
 
 
 /**
@@ -30,8 +29,8 @@ import JSONDialog from './JSONDialog.js';
  */
 function RulesGrid(props) {
 
-  const [jsonDialogOpen, setJsonDialogOpen] = useState(false)
-  const [ruleInfo, setRuleInfo] = useState({})  
+  const [jsonDialogOpen, setJsonDialogOpen] = React.useState(false)
+  const [ruleInfo, setRuleInfo] = React.useState({})  
 
   async function onInfoClick(param) {
     // param.row.document.name = Identity of the Document

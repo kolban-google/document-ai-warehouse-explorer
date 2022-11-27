@@ -13,12 +13,13 @@
 # limitations under the License.
 */
 import React from 'react';
-import DAW from './daw.js'
+import DAW from '../daw.js'
 import { Box, IconButton } from '@mui/material'
 import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
 import InfoIcon from '@mui/icons-material/Info';
-import JSONDialog from './JSONDialog.js';
+import EditIcon from '@mui/icons-material/Edit';
+import JSONDialog from '../JSONDialog.js';
 import DocumentDetailsDialog from './DocumentDetailsDialog.js';
 
 /**
@@ -49,6 +50,16 @@ function DocumentsGrid(props) {
     setDocumentDetailsDialogOpen(true)
   } // onEditClick
 
+  function patchDocument(newDocument) {
+    // Delete any fields that shouldn't be present
+    DAW.patchDocument(newDocument).then(() => {
+      if (props.onRefresh) {
+        props.onRefresh()
+      }
+    })
+  } // createDocument
+
+  // Define the columns of the Documents grid.
   const columns = [
     {
       field: "info", headerName: "", width: 50, renderCell: (param) => {
@@ -63,23 +74,23 @@ function DocumentsGrid(props) {
       field: "edit", headerName: "", width: 50, renderCell: (param) => {
         return (
           <IconButton onClick={() => { onEditClick(param) }}>
-            <InfoIcon />
+            <EditIcon />
           </IconButton>
         )
       }
     },
     {
-      field: 'document.name', headerName: 'name', width: 300, valueGetter: (param) => {
+      field: 'document.name', headerName: 'Name', width: 300, valueGetter: (param) => {
         return `${param.row.document.displayName} (${DAW.getDocumentId(param.row.document.name)})`
       }
     },
     {
-      field: 'searchTextSnippet', headerName: 'snippet', width: 200, valueGetter: (param) => {
+      field: 'searchTextSnippet', headerName: 'Snippet', width: 200, valueGetter: (param) => {
         return param.row.searchTextSnippet
       }
     },
     {
-      field: 'document.documentSchemaName', headerName: 'documentSchemaName', width: 200, valueGetter: (param) => {
+      field: 'document.documentSchemaName', headerName: 'Document Schema Name', width: 200, valueGetter: (param) => {
         const value = props.schemaMap.get(param.row.document.documentSchemaName);
         if (value === undefined) {
           return DAW.getSchemaId(param.row.document.documentSchemaName)
@@ -88,12 +99,12 @@ function DocumentsGrid(props) {
       }
     },
     {
-      field: 'document.createTime', headerName: 'createTime', width: 250, valueGetter: (param) => {
+      field: 'document.createTime', headerName: 'Create Time', width: 250, valueGetter: (param) => {
         return param.row.document.createTime
       }
     },
     {
-      field: 'document.updateTime', headerName: 'updateTime', width: 250, valueGetter: (param) => {
+      field: 'document.updateTime', headerName: 'Update Time', width: 250, valueGetter: (param) => {
         return param.row.document.updateTime
       }
     }
@@ -110,7 +121,7 @@ function DocumentsGrid(props) {
   } // getRowId
 
   return (
-    <Box sx={{flexGrow: 1, height: "100%"}}>
+    <Box sx={{ flexGrow: 1, height: "100%" }}>
       <DataGrid
         rows={props.searchResults && props.searchResults.matchingDocuments ? props.searchResults.matchingDocuments : []}
         columns={columns}
@@ -121,17 +132,23 @@ function DocumentsGrid(props) {
         getRowId={getRowId}
         onSelectionModelChange={onSelectionModelChange}
       />
-      <JSONDialog title="Document JSON" jsonData={documentInfo} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }}/>
+      <JSONDialog title="Document JSON" jsonData={documentInfo} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} />
       <DocumentDetailsDialog document={documentInfo} schemaMap={props.schemaMap} open={documentDetailsDialogOpen} close={(newDocument) => {
         setDocumentDetailsDialogOpen(false)
-      }}/>
+        if (newDocument) {
+          patchDocument(newDocument)
+        }
+      }} />
+
     </Box>
   )
 }
 
 DocumentsGrid.propTypes = {
   "onSelectionChanged": PropTypes.func,
-  "schemaMap": PropTypes.object
+  "onRefresh": PropTypes.func,
+  "schemaMap": PropTypes.object,
+  "searchResults": PropTypes.object.isRequired
 }
 
 export default DocumentsGrid

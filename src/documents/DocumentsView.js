@@ -13,9 +13,9 @@
 # limitations under the License.
 */
 import React from 'react';
-import DAW from './daw.js'
+import DAW from '../daw.js'
 import { Box, Button } from '@mui/material'
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 import DocumentsGrid from './DocumentsGrid.js';
 import QueryDialog from './QueryDialog.js';
 // Icons
@@ -41,7 +41,7 @@ const newDocumentTemplate = {
 }
 
 function DocumentsView(props) {
-  const [searchResults, setSearchResults] = React.useState(null);
+  const [searchResults, setSearchResults] = React.useState({});
   const [selection, setSelection] = React.useState([]);
   const [schemaMap, setSchemaMap] = React.useState(new Map());
   const [documentQuery, setDocumentQuery] = React.useState({ "query": "" })
@@ -50,6 +50,7 @@ function DocumentsView(props) {
   const [newDocument, setNewDocument] = React.useState(newDocumentTemplate)
 
   const initied = React.useRef(false);
+
 
   // We want a first time initialization
   if (initied.current === false) {
@@ -85,13 +86,20 @@ function DocumentsView(props) {
     onRefresh()
   } // onDelete
 
-  function createDocument() {
-    debugger;
-  }
+  /**
+   * Create a new document that is described in the passed in parameter.
+   * @param {*} newDocument 
+   */
+  function createDocument(newDocument) {
+    // Delete any fields that shouldn't be present
+    delete newDocument.updateTime
+    delete newDocument.createTime
+    DAW.createDocument(newDocument).then(onRefresh)
+  } // createDocument
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
-      <DocumentsGrid schemaMap={schemaMap} searchResults={searchResults} onSelectionChanged={onSelectionChanged} />
+      <DocumentsGrid schemaMap={schemaMap} searchResults={searchResults} onSelectionChanged={onSelectionChanged} onRefresh={onRefresh} />
       <Box sx={{ display: "flex", columnGap: 1 }}>
         <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon />}>Delete</Button>
         <Button onClick={() => { setQueryDialogOpen(true) }} variant="contained" endIcon={<SettingsIcon />}>Query</Button>
@@ -115,7 +123,9 @@ function DocumentsView(props) {
   )
 } // DocumentsView
 
+/*
 DocumentsView.propTypes = {
 }
+*/
 
 export default DocumentsView

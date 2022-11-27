@@ -20,7 +20,7 @@
  * newly selected property.
  */
 import React from 'react';
-import DAW from './daw.js'
+import DAW from '../daw.js'
 import { MenuItem, TextField } from '@mui/material'
 import PropTypes from 'prop-types';
 

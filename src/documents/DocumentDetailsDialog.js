@@ -13,11 +13,10 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from '@mui/material'
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
 import PropTypes from 'prop-types';
-import SchemaDetails from './SchemaDetails';
-import JSONDialog from './JSONDialog';
+import JSONDialog from '../JSONDialog';
+import DocumentDetails from './DocumentDetails.js';
 
 /**
  * Display a dialog that shows the current schema details or create new schema details.
@@ -28,55 +27,58 @@ import JSONDialog from './JSONDialog';
  * The document schema to show is passed in documentSchema.
  * 
  * To indicate that this is a new schema, the props.create flag is set to true.
- * @param {*} props 
+ * @param {*} props  
  * @returns 
  */
-function SchemaDetailsDialog(props) {
+function DocumentDetailsDialog(props) {
 
-  const [documentSchema, setDocumentSchema] = React.useState(props.documentSchema)
+  const [document, setDocument] = React.useState(null)
   const [jsonDialogOpen, setJsonDialogOpen] = React.useState(false)
-  const needsUpdated = React.useRef(true);
-  
-  React.useEffect(() => {
-    setDocumentSchema(props.documentSchema)
-  }, [props.open])
-  
 
-  if (props.open && needsUpdated.current) {
-  //  setDocumentSchema(props.documentSchema)
-    needsUpdated.current = false;
+  if (props.open === true && document === null) {
+    setDocument(props.document)
+    return
   }
-  function onDocumentSchemaChange(documentSchema) {
-    setDocumentSchema(documentSchema)
+
+  if (props.open === false) {
+    if (document !== null) {
+      setDocument(null)
+    }
+    return
+  }
+  
+  function onDocumentChange(document) {
+    setDocument(document)
   } // onDocumentSchemaChange
 
   return (
     <Dialog open={props.open} fullWidth maxWidth="md">
-      <DialogTitle>Schema Details</DialogTitle>
+      <DialogTitle>{props.create === true?"Create Document": "Document Details"}</DialogTitle>
       <DialogContent>
-        <SchemaDetails documentSchema={documentSchema} onChange={onDocumentSchemaChange} create={props.create} />
+        <DocumentDetails document={document} onChange={onDocumentChange} create={props.create} schemaMap={props.schemaMap}/>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>
           Show
         </Button>
-        <Button variant="contained" color="primary" onClick={() => {needsUpdated.current=true; props.close(documentSchema) }}>
-          Apply
+        <Button variant="contained" color="primary" onClick={() => {props.close(document) }}>
+          {props.create === true?"Create":"Apply"}
         </Button>
-        <Button variant="contained" color="primary" onClick={() => {needsUpdated.current=true; props.close(null) }}>
+        <Button variant="contained" color="primary" onClick={() => {props.close(null) }}>
           Cancel
         </Button>
       </DialogActions>
-      <JSONDialog title="Schema Details" jsonData={documentSchema} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} />
+      <JSONDialog title="Document Details" jsonData={document} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} />
     </Dialog>
   );
 }
 
-SchemaDetailsDialog.propTypes = {
-  'open': PropTypes.bool.isRequired,
-  'close': PropTypes.func.isRequired,
-  'documentSchema': PropTypes.object.isRequired,
-  'create': PropTypes.bool
+DocumentDetailsDialog.propTypes = {
+  "open": PropTypes.bool.isRequired,
+  "close": PropTypes.func.isRequired,
+  "document": PropTypes.object.isRequired,
+  "create": PropTypes.bool,
+  "schemaMap": PropTypes.object.isRequired
 }
 
-export default SchemaDetailsDialog;
+export default DocumentDetailsDialog;

@@ -24,13 +24,20 @@ import ReactJson from 'react-json-view'
  */
 function JSONDialog(props) {
 
+  function onCopy() {
+    navigator.clipboard.writeText(JSON.stringify(props.jsonData), null, 2)
+  }
+
   return (
     <Dialog open={props.open}>
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>
-        <ReactJson src={props.jsonData} displayDataTypes={false} displayObjectSize={false} enableClipboard={false} collapsed={1}/>
+        <ReactJson src={props.jsonData} displayDataTypes={false} displayObjectSize={false} enableClipboard={false} collapsed={1} />
       </DialogContent>
       <DialogActions>
+        <Button variant="contained" color="primary" onClick={onCopy}>
+          Copy
+        </Button>
         <Button variant="contained" color="primary" onClick={props.close}>
           Close
         </Button>

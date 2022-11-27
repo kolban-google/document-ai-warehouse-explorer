@@ -13,13 +13,12 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
-import DAW from './daw.js'
+import DAW from '../daw.js'
 import { Box, IconButton } from '@mui/material'
 import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
 
-import JSONDialog from './JSONDialog.js';
+import JSONDialog from '../JSONDialog.js';
 import SchemaDetailsDialog from './SchemaDetailsDialog.js';
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,9 +31,9 @@ import EditIcon from '@mui/icons-material/Edit';
  */
 function SchemasGrid(props) {
 
-  const [jsonDialogOpen, setJsonDialogOpen] = useState(false)
-  const [schemaInfo, setSchemaInfo] = useState({ "name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: [] })
-  const [schemaDetailsDialogOpen, setSchemaDetailsDialogOpen] = useState(false)
+  const [jsonDialogOpen, setJsonDialogOpen] = React.useState(false)
+  const [schemaInfo, setSchemaInfo] = React.useState({ "name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: [] })
+  const [schemaDetailsDialogOpen, setSchemaDetailsDialogOpen] = React.useState(false)
 
   async function onInfoClick(param) {
     const result = await DAW.getSchema(param.row.name)
@@ -68,7 +67,7 @@ function SchemasGrid(props) {
       }
     },
     {
-      "field": 'schema.name', "headerName": 'name', "width": 200, "valueGetter": (param) => {
+      "field": "schema.name", "headerName": "Name", "width": 200, "valueGetter": (param) => {
         return `${param.row.displayName} (${DAW.getSchemaId(param.row.name)})`
       }
     }
@@ -115,7 +114,6 @@ function SchemasGrid(props) {
 
 SchemasGrid.propTypes = {
   "onSelectionChanged": PropTypes.func,
-  "schemas": PropTypes.object
 }
 
 export default SchemasGrid

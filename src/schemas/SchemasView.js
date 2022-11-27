@@ -13,22 +13,27 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
-import DAW from './daw.js'
+import DAW from '../daw.js'
 import { Box, Button } from '@mui/material'
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SchemasGrid from './SchemasGrid.js';
 import SchemaDetailsDialog from './SchemaDetailsDialog.js';
 
+
+/**
+ * A view that shows the schemas associated with Document AI Warehouse.
+ * @param {*} props 
+ * @returns 
+ */
 function SchemasView(props) {
   const [searchResults, setSearchResults] = React.useState(null);
   const [selection, setSelection] = React.useState([]);
-  const [schemas, setSchemas] = React.useState(new Map());
+  //const [schemas, setSchemas] = React.useState(new Map());
   const [schemaDetailsDialogOpen, setSchemaDetailsDialogOpen] = React.useState(false);
-  const [newDocumentSchema, setNewDocumentSchema] = useState({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})  
+  const [newDocumentSchema, setNewDocumentSchema] = React.useState({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})  
 
   async function onRefresh() {
     const results = await DAW.listSchemas();
@@ -58,7 +63,7 @@ function SchemasView(props) {
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
-      <SchemasGrid schemaMap={schemas} searchResults={searchResults} onSelectionChanged={onSelectionChanged}/>
+      <SchemasGrid searchResults={searchResults} onSelectionChanged={onSelectionChanged}/>
       <Box sx={{ display: "flex", columnGap: 1 }}>
       <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon/>}>Delete</Button>
       <Button onClick={onCreate} variant="contained" endIcon={<AddCircleIcon/>}>Create</Button>
@@ -74,7 +79,9 @@ function SchemasView(props) {
   )
 } // DocumentsView
 
+/*
 SchemasView.propTypes = {
 }
+*/
 
 export default SchemasView

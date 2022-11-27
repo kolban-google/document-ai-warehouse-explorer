@@ -13,11 +13,9 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
 import PropTypes from 'prop-types';
-import ReactJson from 'react-json-view'
-import JSONDialog from './JSONDialog';
+import JSONDialog from '../JSONDialog';
 import Query from './Query';
 
 /**

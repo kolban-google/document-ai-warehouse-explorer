@@ -3,19 +3,36 @@ import _ from 'lodash';
 let gapi = window.gapi;
 let currentProjectId = ""
 let currentProjectNumber = ""
+let currentLocation = "us"
+let currentUser = ""
+/**
+ * Get the current parent value.
+ * @returns The current parent value.
+ */
+function getParent() {
+  return `projects/${currentProjectNumber}/locations/${currentLocation}`
+} // getParent
 
 function setProjectId(projectId) {
   currentProjectId = projectId
-} // End of setProjectId
+} // setProjectId
 
 function setProjectNumber(projectNumber) {
   currentProjectNumber = projectNumber
 } // setProjectNumber
 
+function setUser(user) {
+  currentUser = user
+} // setUser
+
+/**
+ * Add the request metadata to an object
+ * @param {*} obj 
+ */
 function addRequestMetadata(obj) {
   obj.requestMetadata = {
     "user_info": {
-      "id": "user:kolban@kolban.altostrat.com",
+      "id": `user:${currentUser}`,
       "group_ids": []
     }
   }
@@ -42,7 +59,7 @@ function getSchemaId(parent) {
  */
 async function listSchemas(options) {
   const params = {
-    "parent": `projects/${currentProjectNumber}/locations/us`
+    "parent": getParent()
   }
   const response = await gapi.client.contentwarehouse.projects.locations.documentSchemas.list(params);
   const result = response.result;
@@ -56,6 +73,11 @@ async function listSchemas(options) {
   return map
 } // listSchemas
 
+/**
+ * Retrieve the named schema
+ * @param {*} schemaName 
+ * @returns 
+ */
 async function getSchema(schemaName) {
   const params = {
     "name": schemaName
@@ -69,7 +91,7 @@ async function createSchema(documentSchema) {
   delete newDocumentSchema.updateTime
   delete newDocumentSchema.createTime
   delete newDocumentSchema.name
-  newDocumentSchema.parent = `projects/${currentProjectNumber}/locations/us`
+  newDocumentSchema.parent = getParent()
   const response = await gapi.client.contentwarehouse.projects.locations.documentSchemas.create(newDocumentSchema);
   return response.result
 }
@@ -97,6 +119,28 @@ async function patchSchema(documentSchema) {
 // DOCUMENTS
 //
 
+/**
+ * Patch (update) the specified document
+ * @param {*} document 
+ */
+async function patchDocument(document) {
+  const params = {
+    "name": document.name,
+    "document": document
+  }
+  addRequestMetadata(params)
+  await gapi.client.contentwarehouse.projects.locations.documents.patch(params);
+} // patchDocument
+
+async function createDocument(document) {
+  const params = {
+    "parent": getParent(),
+    "document": document
+  }
+  addRequestMetadata(params)
+  await gapi.client.contentwarehouse.projects.locations.documents.create(params);
+} // createDocument
+
 async function deleteDocument(document) {
   const params = {
     "name": document
@@ -118,7 +162,7 @@ function getDocumentId(parent) {
 async function queryDocuments(documentQuery) {
   // https://cloud.google.com/document-warehouse/docs/reference/rest/v1/projects.locations.ruleSets/list
   const query = {
-    "parent": `projects/${currentProjectNumber}/locations/us`,
+    "parent": getParent(),
     "documentQuery": documentQuery
   }
   addRequestMetadata(query);
@@ -135,6 +179,58 @@ async function getDocument(document) {
   const response = await gapi.client.contentwarehouse.projects.locations.documents.get(params);
   return response.result;
 } // getDocument
+
+/**
+ * Find the property value in the given document
+ * @param {*} propertyName 
+ * @param {*} document 
+ * @returns 
+ */
+function getPropertyValue(propertyName, document) {
+  const value = _.find(document.properties, { "name": propertyName })
+  if (value === undefined) {
+    return value
+  }
+  if (value.hasOwnProperty("textValues")) {
+    return value.textValues.values[0]
+  }
+  debugger
+  return value
+}
+
+/**
+ * Set the property value of the document.  The newValue is the value to be set.
+ * The passed in propertyDefinition is the propertyDefinition in the schema
+ * that describes what the structure of the document property should be.
+ * @param {*} propertyDefinition 
+ * @param {*} document 
+ * @param {*} newValue 
+ */
+function setPropertyValue(propertyDefinition, document, newValue) {
+  // It may be that this is the first property we are setting on the document so
+  // create an empty document.properties.
+  if (!document.hasOwnProperty("properties")) {
+    document.properties = []
+  }
+  // Find the existing document property entry for the name ( if it exists)
+  let value = _.find(document.properties, { "name": propertyDefinition.name })
+
+  // If it doesn't exist, add a new property to the list of properties of the document.
+  if (value === undefined) {
+    value = {
+      "name": propertyDefinition.name
+    }
+    document.properties.push(value)
+  }
+
+  // Set the value of the property.
+  if (propertyDefinition.hasOwnProperty("textTypeOptions")) {
+    value.textValues = { "values": [newValue] }
+  } else {
+    // Type not yet handled
+    debugger
+  }
+}
 
 // RULES
 // projects/221249563454/locations/us/ruleSets/2905bf251f1p8
@@ -158,7 +254,7 @@ async function listRules(projectId) {
   }
   // https://cloud.google.com/document-warehouse/docs/reference/rest/v1/projects.locations.ruleSets/list
   const query = {
-    "parent": `projects/${currentProjectNumber}/locations/us`
+    "parent": getParent()
   }
   const response = await gapi.client.contentwarehouse.projects.locations.ruleSets.list(query);
   return response.result;
@@ -197,7 +293,7 @@ async function deleteRuleSet(document) {
  * }
  */
 async function rulesCreate(ruleSet) {
-  ruleSet.parent = `projects/${currentProjectNumber}/locations/us`;
+  ruleSet.parent = getParent()
   const response = await gapi.client.contentwarehouse.projects.locations.ruleSets.create(ruleSet);
   debugger;
   return response.result;
@@ -206,5 +302,10 @@ async function rulesCreate(ruleSet) {
 //
 // Exports
 //
-const exports = { setProjectId, listRules, queryDocuments, getDocumentId, getSchemaId, getRuleSetId, getSchema, createSchema, deleteSchema, patchSchema, listSchemas, deleteDocument, getDocument, getRuleSet, deleteRuleSet, setProjectNumber }
+const exports = {
+  setProjectId, setProjectNumber, setUser,
+  listRules, getRuleSetId, getRuleSet, deleteRuleSet, rulesCreate,
+  getSchemaId, getSchema, createSchema, deleteSchema, patchSchema, listSchemas,
+  getDocumentId, queryDocuments, createDocument, deleteDocument, getDocument, patchDocument, getPropertyValue, setPropertyValue
+}
 export default exports;

@@ -13,11 +13,9 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
-import DAW from './daw.js'
+import DAW from '../daw.js'
 import { Box, Button} from '@mui/material'
-import PropTypes from 'prop-types';
-import RuleSet from './ruleSet.js';
+//import PropTypes from 'prop-types';
 import RulesGrid from './RulesGrid.js';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -54,7 +52,9 @@ function RulesView(props) {
   )
 }
 
+/*
 RulesView.propTypes = {
 }
+*/
 
 export default RulesView

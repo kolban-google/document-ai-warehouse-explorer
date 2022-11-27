@@ -13,33 +13,48 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState } from 'react';
-import { Box, AppBar, IconButton, Typography, Toolbar, Button, Tab, Menu, MenuItem } from '@mui/material'
+import { Box, AppBar, IconButton, Typography, Toolbar, Button, Tab, Paper } from '@mui/material'
 import { TabPanel, TabContext, TabList } from '@mui/lab';
 import MenuIcon from '@mui/icons-material/Menu';
 import HelpIcon from '@mui/icons-material/Help';
-import PropTypes from 'prop-types';
+//import PropTypes from 'prop-types';
 import GCP_SEC from './gcp_sec';
 import SettingsDialog from './SettingsDialog';
-import RulesView from './RulesView';
-import DocumentsView from './DocumentsView';
-import SchemasView from './SchemasView';
+import RulesView from './rules/RulesView';
+import DocumentsView from './documents/DocumentsView';
+import SchemasView from './schemas/SchemasView';
 import DAW from './daw.js'
+import AboutDialog from './About';
 
 function Main(props) {
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [tabIndex, setTabIndex] = useState('1')
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [mainMenuAnchorEl, setMainMenuAnchorEl] = useState(null)
-  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
-  const [settings, setSettings] = useState({
-    clientId: "604474120566-f1esonn8rpkcl8mckam6bk9gdsgsl88s.apps.googleusercontent.com",
-    projectId: "test1-305123",
-    projectNumber: "604474120566",
-    user: ""
-  })
+  const [loggedIn, setLoggedIn] = React.useState(false)
+  const [tabIndex, setTabIndex] = React.useState('1')
+  const [settings, setSettings] = React.useState(getSettings())
+
+  // Dialog open flags
+  const [settingsOpen, setSettingsOpen] = React.useState(false)
+  const [aboutOpen, setAboutOpen] = React.useState(false)
+  //
 
   DAW.setProjectNumber(settings.projectNumber)
+  DAW.setUser(settings.user)
+
+  /**
+   * Get the current settings.
+   * @returns 
+   */
+  function getSettings() {
+    const savedSettings = localStorage.getItem("settings")
+    if (savedSettings === null) {
+      return     {
+        clientId: "604474120566-f1esonn8rpkcl8mckam6bk9gdsgsl88s.apps.googleusercontent.com",
+        projectId: "",
+        projectNumber: "",
+        user: ""
+      }
+    }
+    return JSON.parse(savedSettings)
+  } // getSettings
 
   async function signIn() {
     await GCP_SEC.gapiLoad();
@@ -53,29 +68,36 @@ function Main(props) {
     }
 
     //console.log("< gisInit");
-  } // End of signIn
+  } // signIn
 
-  function onAbout() {
-
-  }
   /**
-   * Open the settings dialog
+   * Test the value of the settings.
+   * @returns false if the settings are invalid
    */
-  function onSettings() {
-    setMainMenuAnchorEl(null) // Close the menu
-    setSettingsDialogOpen(true)
-  } // End of onSettings
+  function settingsValid() {
+    if (settings === null || settings === undefined || settings.projectId.length === 0 || settings.projectNumber.length === 0 || settings.user.length === 0 || settings.clientId.length === 0) {
+      return false
+    }
+    return true
+  }
 
-  function settingsClosed(newSettings) {
+  function onSettingsClose(newSettings) {
     setSettingsOpen(false);
+    // If we are passed no new settings, then this was a cancel so simply return.
+    if (newSettings === null) {
+      return
+    }
     console.log(newSettings);
     setSettings(newSettings)
-  }
+    DAW.setProjectNumber(newSettings.projectNumber)
+    DAW.setUser(newSettings.user)
+    localStorage.setItem("settings", JSON.stringify(newSettings))
+  } // settingsClosed
 
   let body;
   if (!loggedIn) {
     body = (
-      <Box>Not logged in</Box>
+      <Paper>{settingsValid() === false?"Please set settings":null} Please sign in</Paper>
     )
   } else {
     body = (
@@ -83,18 +105,18 @@ function Main(props) {
         <TabList onChange={(event, newValue) => setTabIndex(newValue)}
           textColor="inherit">
           <Tab label="Documents" value="1" />
-          <Tab label="Rules" value="2" />
-          <Tab label="Schemas" value="3" />
+          <Tab label="Schemas" value="2" />
+          <Tab label="Rules" value="3" />
         </TabList>
 
         <TabPanel value="1" sx={{ flexGrow: 1 }}>
           <DocumentsView />
         </TabPanel>
-        <TabPanel value="2" >
-          <RulesView />
-        </TabPanel>
-        <TabPanel value="3" sx={{ flexGrow: 1 }}>
+        <TabPanel value="2" sx={{ flexGrow: 1 }}>
           <SchemasView />
+        </TabPanel>
+        <TabPanel value="3" >
+          <RulesView />
         </TabPanel>
       </TabContext>)
   }
@@ -110,25 +132,21 @@ function Main(props) {
             Document AI Warehouse Explorer
           </Typography>
           <Button color="inherit" onClick={signIn}>Sign In</Button>
-          <IconButton color="inherit" onClick={onAbout}>
+          <IconButton color="inherit" onClick={()=>{setAboutOpen(true)}}>
             <HelpIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
       {body}
-      <SettingsDialog open={settingsOpen} close={settingsClosed} settings={settings} />
-
-      <Menu
-        anchorEl={mainMenuAnchorEl}
-        open={Boolean(mainMenuAnchorEl)}
-        onClose={() => { setMainMenuAnchorEl(null) }}>
-        <MenuItem onClick={onSettings}>Settings</MenuItem>
-      </Menu>
+      <SettingsDialog open={settingsOpen} close={onSettingsClose} settings={settings} />
+      <AboutDialog open={aboutOpen} close={() => {setAboutOpen(false)}} />
     </Box>
   )
 } // EntityInfoDialog
 
+/*
 Main.propTypes = {
 }
+*/
 
 export default Main

@@ -13,44 +13,60 @@
 # limitations under the License.
 */
 import React from 'react';
-import { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,  Button} from '@mui/material'
+import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, Box } from '@mui/material'
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 /**
  * Display the settings
  * 
  */
+
 function SettingsDialog(props) {
 
-  const [projectId, setProjectId] = useState(props.settings.projectId)
-  const [projectNumber, setProjectNumber] = useState(props.settings.projectNumber)
-  const [user, setUser] = useState(props.settings.user)
+  const [settings, setSettings] = React.useState(null)
+
+  if (props.open === true && settings === null) {
+    setSettings(props.settings)
+    return
+  }
+
+  if (props.open === false) {
+    if (settings !== null) {
+      setSettings(null)
+    }
+    return
+  }
+
   /**
-   * render
-   * @returns 
+   * When a text field changes, it sends an event that indicates the new value.
+   * This generic function receives the event and a named field within the document.
+   * That field is then set to the current value of the text field.
+   * @param {*} fieldName 
+   * @param {*} evt 
    */
+  function onTextFieldChange(fieldName, evt) {
+    const newSettings = _.cloneDeep(settings)
+    newSettings[fieldName] = evt.target.value
+    setSettings(newSettings)
+  } // onTextFieldChange
 
   return (
-    <Dialog open={props.open}>
+    <Dialog open={props.open} fullWidth maxWidth="sm">
       <DialogTitle>Settings</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Settings
-        </DialogContentText>
-        <TextField label="Project ID" variant="standard" value={projectId} onChange={(e) => {
-          setProjectId(e.target.value);
-        }} />
-        <TextField label="Project Number" variant="standard" value={projectNumber} onChange={(e) => {
-          setProjectNumber(e.target.value);
-        }} />
-        <TextField label="User" variant="standard" value={user} onChange={(e) => {
-          setProjectNumber(e.target.value);
-        }} />
+        <Box sx={{ "display": "flex", "flexDirection": "column", "rowGap": 2 }}>
+          <TextField fullWidth label="Project ID" variant="outlined" value={settings.projectId} margin="dense" onChange={onTextFieldChange.bind(this, "projectId")} />
+          <TextField fullWidth label="Project Number" variant="outlined" value={settings.projectNumber} onChange={onTextFieldChange.bind(this, "projectNumber")} />
+          <TextField fullWidth label="User" variant="outlined" value={settings.user} onChange={onTextFieldChange.bind(this, "user")} />
+        </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="primary" onClick={() => { props.close({ ...props.settings, projectId, projectNumber, user }) }}>
-          Close
+        <Button variant="contained" color="primary" onClick={() => { props.close(settings) }}>
+          Apply
+        </Button>
+        <Button variant="contained" color="primary" onClick={() => { props.close(null) }}>
+          Cancel
         </Button>
       </DialogActions>
     </Dialog>

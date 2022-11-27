@@ -50,11 +50,11 @@
  */
 
 import React from 'react';
-import { Box, MenuItem, TextField, Button, IconButton, FormGroup, FormControlLabel, Switch, FormControl, Card, CardContent, CardActions, Typography, Divider } from '@mui/material'
+import { Box, MenuItem, TextField, Button, IconButton, FormGroup, FormControlLabel, Switch, Card, CardContent, CardActions, Typography, Divider } from '@mui/material'
 import PropTypes from 'prop-types';
-import PropertyFilter from './PropertyFilter';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SchemaSelection from './SchemaSelection';
+import PropertyFilter from '../schemas/PropertyFilter.js';
+import DeleteIcon from '@mui/icons-material/Delete.js';
+import SchemaSelection from '../schemas/SchemaSelection.js';
 import _ from 'lodash';
 
 /**
@@ -75,7 +75,7 @@ function Query(props) {
     props.onChange(documentQuery)
   } // onChange
 
-
+/*
   function validate(documentQuery) {
     // Validate the time filters
     if (documentQuery.timeFilters) {
@@ -88,6 +88,7 @@ function Query(props) {
       })
     }
   } // validate
+  */
 
   function onQueryChange(evt) {
     const newDocumentQuery = _.cloneDeep(props.documentQuery)
