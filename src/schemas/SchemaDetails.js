@@ -114,7 +114,7 @@ function SchemaDetails(props) {
         <FormControlLabel control={<Checkbox checked={props.documentSchema.documentIsFolder === true} onChange={onDocumentIsFolderChange} disabled={!props.create}/>} label="Folder" />
       </FormGroup>
       <Box>
-      <Button variant="contained" onClick={onAddNewPropertyDefinition}>Add</Button>
+      <Button variant="contained" onClick={onAddNewPropertyDefinition}>Add Property</Button>
       </Box>
       {propertyDefinitionsComponents}
     </Box>

@@ -23,6 +23,7 @@ https://kolban-google.github.io/document-ai-warehouse-explorer/
 ## Setup for usage
 Once the project is launched, you must perform a one-time setup.  Click the settings icon (hamburger button in the menu bar) and you will be prompted for three inputs:
 
+* Client ID - The OAuth2 client ID you created (See below).
 * Project ID - The Project ID that you will authenticate against.
 * Project Number - The Project Number that is hosting Document AI Warehouse.
 * User - The user name (email address) that is used for Document AI Warehouse ACL security.
@@ -34,3 +35,23 @@ Next, click the `Sign-In` button found on the top menu.  Select a Google Account
 `Content Warehouse Admin`
 
 You are now ready to play.  You can view documents, schemas, rules.  For documents you can see their details, build queries, run searches and create new ones.  Similar for schemas.
+
+## OAuth2 configuration
+Since this application is not a *production* application, you need to create some credentials for OAuth2 configuration.
+
+1. Select your project GCP Console in which you have deployed your Document AI Warehouse
+2. Using the hamburger menu, visit APIs & Services > OAuth consent screen
+3. Define an Internal application using your own email for owner and developer
+4. Using the hamburger menu, visit APIs & Services > Credentials
+5. Click `+ CREATE CREDENTIALS`
+6. Select OAuth client ID
+7. Under application type, select `Web Application`
+8. Give the app a name
+9. Under `Authorized Javascript origins` click `+ ADD URI` and enter `https://kolban-google.github.io` for the allowed URI
+10.Click `SAVE` 
+
+And now you should be able to visit:
+
+https://kolban-google.github.io/document-ai-warehouse-explorer/
+
+and define settings (including the Client ID just created).

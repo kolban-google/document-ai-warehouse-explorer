@@ -24,6 +24,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DocumentDetailsDialog from './DocumentDetailsDialog.js';
+import ErrorDialog from '../ErrorDialog'
 
 const newDocumentTemplate = {
   "name": "",
@@ -36,6 +37,7 @@ const newDocumentTemplate = {
   "updateTime": "",
   "createTime": "",
   "textExtractionDisabled": false,
+  "rawDocumentFileType": "RAW_DOCUMENT_FILE_TYPE_UNSPECIFIED",
   "creator": "",
   "updater": ""
 }
@@ -46,6 +48,8 @@ function DocumentsView(props) {
   const [schemaMap, setSchemaMap] = React.useState(new Map());
   const [documentQuery, setDocumentQuery] = React.useState({ "query": "" })
   const [queryDialogOpen, setQueryDialogOpen] = React.useState(false)
+  const [errorDialogOpen, setErrorDialogOpen] = React.useState(false)
+  const [error, setError] = React.useState({ "message": "No Error" })
   const [documentDetailsDialogOpen, setDocumentDetailsDialogOpen] = React.useState(false)
   const [newDocument, setNewDocument] = React.useState(newDocumentTemplate)
 
@@ -60,12 +64,22 @@ function DocumentsView(props) {
     })
   }
 
+  function showError(e) {
+    setError(e)
+    setErrorDialogOpen(true)
+  } // error
+
   /**
    * Refresh the documents in the table.
    */
   async function onRefresh() {
-    const results = await DAW.queryDocuments(documentQuery);
-    setSearchResults(results);
+    try {
+      const results = await DAW.queryDocuments(documentQuery);
+      setSearchResults(results);
+    }
+    catch (e) {
+      showError(e.result.error)
+    }
   } // onRefresh
 
   /**
@@ -101,7 +115,7 @@ function DocumentsView(props) {
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
       <DocumentsGrid schemaMap={schemaMap} searchResults={searchResults} onSelectionChanged={onSelectionChanged} onRefresh={onRefresh} />
       <Box sx={{ display: "flex", columnGap: 1 }}>
-        <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon />}>Delete</Button>
+        <Button onClick={onDelete} variant="contained" disabled={selection.length === 0} endIcon={<DeleteForeverIcon />}>Delete</Button>
         <Button onClick={() => { setQueryDialogOpen(true) }} variant="contained" endIcon={<SettingsIcon />}>Query</Button>
         <Button onClick={() => { setDocumentDetailsDialogOpen(true) }} variant="contained" endIcon={<AddCircleIcon />}>Create</Button>
         <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon />}>Refresh</Button>
@@ -119,6 +133,7 @@ function DocumentsView(props) {
             createDocument(newDocument)
           }
         }} />
+      <ErrorDialog open={errorDialogOpen} close={() => { setErrorDialogOpen(false) }} error={error} />
     </Box>
   )
 } // DocumentsView

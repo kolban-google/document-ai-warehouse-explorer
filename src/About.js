@@ -32,7 +32,7 @@ function AboutDialog(props) {
         <p>A sample UI for Document AI Warehouse:
         </p>
         <p>
-            The source for this sample can be found at <a href="https://github.com/kolban-google/doc-ai-warehouse" target="_blank" rel="noreferrer">github: kolban-google/doc-ai-warehouse</a>
+            The source for this sample can be found at <a href="https://github.com/kolban-google/document-ai-warehouse-explorer" target="_blank" rel="noreferrer">github: kolban-google/document-ai-warehouse-explorer</a>
         </p>
         <p>This project is merely a sample and is provided <i>as-is</i> with no formal support.
             This is not a Google product or Google offering.

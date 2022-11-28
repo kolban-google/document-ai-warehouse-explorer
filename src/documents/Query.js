@@ -242,14 +242,14 @@ function Query(props) {
   if (props.documentQuery.propertyFilters) {
     props.documentQuery.propertyFilters.forEach((currentPropertyFilter, index) => {
       propertyFiltersComponents.push(
-        <Box flexGrow={1} display="flex" gap="10px" flexDirection="row">
+        <Box key={index} flexGrow={1} display="flex" gap="10px" flexDirection="row">
           <PropertyFilter value={currentPropertyFilter} onChange={(p) => { onPropertyFiltersChange(p, index) }} schemaMap={props.schemaMap} />
           <IconButton onClick={() => { onPropertyFiltersDelete(index) }}>
             <DeleteIcon />
           </IconButton>
         </Box>)
       if (index !== props.documentQuery.propertyFilters.length - 1) {
-        propertyFiltersComponents.push(<Divider />)
+        propertyFiltersComponents.push(<Divider key={`divider-${index}`}/>)
       }
     })
   }
@@ -287,9 +287,6 @@ function Query(props) {
     <Box display="flex" gap="10px" flexDirection="column">
       <Card>
         <CardContent>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Query
-          </Typography>
           <TextField fullWidth label="Query" variant="standard" value={props.documentQuery.query} onChange={onQueryChange} />
         </CardContent>
       </Card>
@@ -349,7 +346,7 @@ function Query(props) {
             <TextField
               fullWidth
               onChange={onStartTimeChange}
-              value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.startTime : ""}
+              value={props.documentQuery.timeFilters && props.documentQuery.timeFilters.length > 0? props.documentQuery.timeFilters[0].timeRange.startTime : ""}
               variant="standard"
               label="Start Time"
               type="datetime-local"
@@ -362,7 +359,7 @@ function Query(props) {
             <TextField
               fullWidth
               onChange={onEndTimeChange}
-              value={props.documentQuery.timeFilters ? props.documentQuery.timeFilters[0].timeRange.endTime : ""}
+              value={props.documentQuery.timeFilters && props.documentQuery.timeFilters.length > 0 ? props.documentQuery.timeFilters[0].timeRange.endTime : ""}
               variant="standard"
               label="End Time"
               type="datetime-local"
@@ -380,7 +377,7 @@ function Query(props) {
         </CardContent>
         <CardActions>
           <FormGroup>
-            <FormControlLabel control={<Switch checked={props.documentQuery.timeFilters} onChange={onUseTimeChange} />} label="Use" />
+            <FormControlLabel control={<Switch checked={props.documentQuery.hasOwnProperty("timeFilters") && props.documentQuery.timeFilters.length > 0 } onChange={onUseTimeChange} />} label="Use" />
           </FormGroup>
         </CardActions>
       </Card>

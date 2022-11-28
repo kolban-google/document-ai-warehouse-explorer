@@ -56,6 +56,7 @@ function SettingsDialog(props) {
       <DialogTitle>Settings</DialogTitle>
       <DialogContent>
         <Box sx={{ "display": "flex", "flexDirection": "column", "rowGap": 2 }}>
+          <TextField fullWidth label="Client ID" variant="outlined" value={settings.clientId} margin="dense" onChange={onTextFieldChange.bind(this, "clientId")} />
           <TextField fullWidth label="Project ID" variant="outlined" value={settings.projectId} margin="dense" onChange={onTextFieldChange.bind(this, "projectId")} />
           <TextField fullWidth label="Project Number" variant="outlined" value={settings.projectNumber} onChange={onTextFieldChange.bind(this, "projectNumber")} />
           <TextField fullWidth label="User" variant="outlined" value={settings.user} onChange={onTextFieldChange.bind(this, "user")} />

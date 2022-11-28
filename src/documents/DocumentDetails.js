@@ -13,7 +13,7 @@
 # limitations under the License.
 */
 import React from 'react';
-import { TextField, FormGroup, Box, FormControlLabel, Checkbox, Card, CardContent } from '@mui/material'
+import { TextField, FormGroup, Box, FormControlLabel, Checkbox, Card, CardContent, MenuItem } from '@mui/material'
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import DAW from '../daw'
@@ -27,6 +27,7 @@ import SchemaSelection from '../schemas/SchemaSelection';
  */
 function DocumentDetails(props) {
   const [schema, setSchema] = React.useState(null)
+
   React.useEffect(() => {
     async function run() {
       console.log(`Looking up schema for "${props.document.documentSchemaName}"`)
@@ -60,7 +61,7 @@ function DocumentDetails(props) {
     const newDocument = _.cloneDeep(props.document)
     newDocument.textExtractionDisabled = evt.target.checked
     onChange(newDocument)
-  }
+  } // onTextExtractionDisabledChange
 
   /**
    * When a text field changes, it sends an event that indicates the new value.
@@ -79,7 +80,7 @@ function DocumentDetails(props) {
     const newDocument = _.cloneDeep(props.document)
     DAW.setPropertyValue(propertyDefinition, newDocument, evt.target.value)
     onChange(newDocument)
-  }
+  } // onPropertyChange
 
   let propertyDefinitionsComponents = []
   if (schema !== null && schema.hasOwnProperty("propertyDefinitions")) {
@@ -114,18 +115,43 @@ function DocumentDetails(props) {
       {!props.create ?
         <TextField value={props.document.createTime} disabled label="Create Time" variant="outlined" />
         : null}
-      <TextField value={props.document.rawDocumentFileType} label="Raw Document File Type" variant="outlined" />
       {!props.create ?
         <TextField value={props.document.creator} disabled label="Creator" variant="outlined" />
         : null}
       {!props.create ?
         <TextField value={props.document.updater} disabled label="Updater" variant="outlined" />
         : null}
+      <TextField
+        select
+        disabled={props.create !== true}
+        label="Document File Type"
+        value={props.document.rawDocumentFileType?props.document.rawDocumentFileType:""}
+        onChange={onTextFieldChange.bind(this, "rawDocumentFileType")}>
+        <MenuItem key="key1" value="RAW_DOCUMENT_FILE_TYPE_UNSPECIFIED">
+          Unspecified
+        </MenuItem>
+        <MenuItem key="key2" value="RAW_DOCUMENT_FILE_TYPE_PDF">
+          Adobe PDF format
+        </MenuItem>
+        <MenuItem key="key3" value="RAW_DOCUMENT_FILE_TYPE_DOCX">
+          Microsoft word format
+        </MenuItem>
+        <MenuItem key="key4" value="RAW_DOCUMENT_FILE_TYPE_XLSX">
+          Microsoft Excel format
+        </MenuItem>
+        <MenuItem key="key5" value="RAW_DOCUMENT_FILE_TYPE_PPTX">
+          Microsoft Powerpoint format
+        </MenuItem>
+        <MenuItem key="key6" value="RAW_DOCUMENT_FILE_TYPE_TEXT">
+          UTF-8 encoded text format
+        </MenuItem>
+      </TextField>
       <FormGroup>
         <FormControlLabel control={<Checkbox disabled={props.create !== true} checked={props.document.textExtractionDisabled === true} />} label="Text Extraction Disabled" onChange={onTextExtractionDisabledChange} />
       </FormGroup>
       {propertyDefinitionsComponents}
-      <TextField value={props.document.plainText?props.document.plainText:""} label="Plain Text" multiline onChange={onTextFieldChange.bind(this, "plainText")}/>
+      <TextField value={props.document.plainText ? props.document.plainText : ""} label="Plain Text" multiline onChange={onTextFieldChange.bind(this, "plainText")} />
+      <TextField value={props.document.rawDocumentPath ? props.document.rawDocumentPath : ""} label="Cloud Storage Document" onChange={onTextFieldChange.bind(this, "rawDocumentPath")} />
     </Box>
   )
 } // DocumentDetails

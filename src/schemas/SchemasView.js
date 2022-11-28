@@ -65,7 +65,7 @@ function SchemasView(props) {
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
       <SchemasGrid searchResults={searchResults} onSelectionChanged={onSelectionChanged}/>
       <Box sx={{ display: "flex", columnGap: 1 }}>
-      <Button onClick={onDelete} variant="contained" endIcon={<DeleteForeverIcon/>}>Delete</Button>
+      <Button onClick={onDelete} variant="contained" disabled={selection.length === 0} endIcon={<DeleteForeverIcon/>}>Delete</Button>
       <Button onClick={onCreate} variant="contained" endIcon={<AddCircleIcon/>}>Create</Button>
       <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
       </Box>
