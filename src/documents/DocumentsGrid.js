@@ -139,7 +139,6 @@ function DocumentsGrid(props) {
           patchDocument(newDocument)
         }
       }} />
-
     </Box>
   )
 }

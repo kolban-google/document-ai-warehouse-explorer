@@ -47,7 +47,7 @@ function Main(props) {
     const savedSettings = localStorage.getItem("settings")
     if (savedSettings === null) {
       return     {
-        clientId: "604474120566-f1esonn8rpkcl8mckam6bk9gdsgsl88s.apps.googleusercontent.com",
+        clientId: "",
         projectId: "",
         projectNumber: "",
         user: ""
@@ -115,7 +115,7 @@ function Main(props) {
         <TabPanel value="2" sx={{ flexGrow: 1 }}>
           <SchemasView />
         </TabPanel>
-        <TabPanel value="3" >
+        <TabPanel value="3" sx = {{flexGrow: 1 }}>
           <RulesView />
         </TabPanel>
       </TabContext>)

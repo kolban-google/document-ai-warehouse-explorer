@@ -33,7 +33,9 @@ function SchemasView(props) {
   const [selection, setSelection] = React.useState([]);
   //const [schemas, setSchemas] = React.useState(new Map());
   const [schemaDetailsDialogOpen, setSchemaDetailsDialogOpen] = React.useState(false);
-  const [newDocumentSchema, setNewDocumentSchema] = React.useState({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})  
+  //const [newDocumentSchema, setNewDocumentSchema] = React.useState({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})  
+
+  const templateDocumentSchema = {"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []}
 
   async function onRefresh() {
     const results = await DAW.listSchemas();
@@ -45,7 +47,7 @@ function SchemasView(props) {
   } // onSelectionChanged
 
   function onCreate() {
-    setNewDocumentSchema({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})
+    //setNewDocumentSchema({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})
     setSchemaDetailsDialogOpen(true)
   }
 
@@ -69,7 +71,7 @@ function SchemasView(props) {
       <Button onClick={onCreate} variant="contained" endIcon={<AddCircleIcon/>}>Create</Button>
       <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
       </Box>
-      <SchemaDetailsDialog documentSchema={newDocumentSchema} open={schemaDetailsDialogOpen} close={(newSchema) => {
+      <SchemaDetailsDialog documentSchema={templateDocumentSchema} open={schemaDetailsDialogOpen} close={(newSchema) => {
         setSchemaDetailsDialogOpen(false)
         if (newSchema) {
           createSchema(newSchema)

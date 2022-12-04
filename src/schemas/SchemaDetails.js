@@ -83,7 +83,7 @@ function SchemaDetails(props) {
       propertyDefinitionsComponents.push(
         <Card key={index}>
           <CardContent>
-            <Box sx={{width: "100%"}} flexGrow={1} display="flex" gap="10px" flexDirection="row">
+            <Box sx={{ width: "100%" }} flexGrow={1} display="flex" gap="10px" flexDirection="row">
               <PropertyDefinition create={props.create} propertyDefinition={currentPropertyDefinition} onChange={(propertyDefinition) => {
                 onPropertyDefinitionChange(propertyDefinition, index)
               }} />
@@ -99,22 +99,16 @@ function SchemaDetails(props) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
-      {!props.create ?
-        <TextField value={props.documentSchema.name} label="Name" variant="outlined" disabled margin="dense"/>
-        : null}
-      <TextField value={props.documentSchema.displayName} onChange={onDisplayNameChange} label="Display Name" margin="dense" variant="outlined" error={props.documentSchema.displayName.length === 0}/>
-      {!props.create ?
-        <TextField value={props.documentSchema.updateTime} label="Update Time" variant="outlined" disabled />
-        : null}
-      {!props.create ?
-        <TextField value={props.documentSchema.createTime} label="Create Time" variant="outlined" disabled />
-        : null}
-      <TextField value={props.documentSchema.description?props.documentSchema.description:""} onChange={onDescriptionChange} label="Description" variant="outlined" />
+      {!props.create && <TextField value={props.documentSchema.name} label="Name" variant="outlined" disabled margin="dense" />}
+      <TextField value={props.documentSchema.displayName} onChange={onDisplayNameChange} label="Display Name" margin="dense" variant="outlined" error={props.documentSchema.displayName.length === 0} />
+      {!props.create && <TextField value={props.documentSchema.updateTime} label="Update Time" variant="outlined" disabled />}
+      {!props.create && <TextField value={props.documentSchema.createTime} label="Create Time" variant="outlined" disabled />}
+      <TextField value={props.documentSchema.description ? props.documentSchema.description : ""} onChange={onDescriptionChange} label="Description" variant="outlined" />
       <FormGroup>
-        <FormControlLabel control={<Checkbox checked={props.documentSchema.documentIsFolder === true} onChange={onDocumentIsFolderChange} disabled={!props.create}/>} label="Folder" />
+        <FormControlLabel control={<Checkbox checked={props.documentSchema.documentIsFolder === true} onChange={onDocumentIsFolderChange} disabled={!props.create} />} label="Folder" />
       </FormGroup>
       <Box>
-      <Button variant="contained" onClick={onAddNewPropertyDefinition}>Add Property</Button>
+        <Button variant="contained" onClick={onAddNewPropertyDefinition}>Add Property</Button>
       </Box>
       {propertyDefinitionsComponents}
     </Box>

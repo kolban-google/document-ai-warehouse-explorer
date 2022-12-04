@@ -18,7 +18,9 @@ import { Box, IconButton } from '@mui/material'
 import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
 import InfoIcon from '@mui/icons-material/Info';
+import EditIcon from '@mui/icons-material/Edit';
 import JSONDialog from '../JSONDialog.js';
+import RuleSetDetailsDialog from './RuleSetDetailsDialog.js';
 
 
 /**
@@ -30,33 +32,49 @@ import JSONDialog from '../JSONDialog.js';
 function RulesGrid(props) {
 
   const [jsonDialogOpen, setJsonDialogOpen] = React.useState(false)
-  const [ruleInfo, setRuleInfo] = React.useState({})  
+  const [ruleInfo, setRuleInfo] = React.useState({})
+  const [ruleSetDetailsDialogOpen, setRuleSetDetailsDialogOpen] = React.useState(false)
 
   async function onInfoClick(param) {
     // param.row.document.name = Identity of the Document
     const result = await DAW.getRuleSet(param.row.name)
     setRuleInfo(result)
     setJsonDialogOpen(true)
-  }
+  } // onInfoClick
+
+  async function onEditClick(param) {
+    const result = await DAW.getRuleSet(param.row.name)
+    setRuleInfo(result)
+    setRuleSetDetailsDialogOpen(true)
+  } // onEditClick
 
   const columns = [
     {
       field: "info", headerName: "", width: 50, renderCell: (param) => {
         return (
-          <IconButton onClick={() => {onInfoClick(param)}}>
+          <IconButton onClick={() => { onInfoClick(param) }}>
             <InfoIcon />
           </IconButton>
         )
       }
     },
     {
+      "field": "edit", "headerName": "", "width": 50, "renderCell": (param) => {
+        return (
+          <IconButton onClick={() => { onEditClick(param) }}>
+            <EditIcon />
+          </IconButton>
+        )
+      }
+    },
+    {
       field: 'name', headerName: 'name', width: 200, valueGetter: (param) => {
-          return DAW.getRuleSetId(param.row.name)
+        return DAW.getRuleSetId(param.row.name)
       }
     },
     {
       field: 'description', headerName: 'description', width: 500, valueGetter: (param) => {
-          return param.row.description
+        return param.row.description
       }
     }
   ];
@@ -77,22 +95,24 @@ function RulesGrid(props) {
   }
   //debugger;
   return (
-    <Box>
-
-      <p>Rules Grid</p>
-      <Box height="400px">
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={20}
-          rowsPerPageOptions={[20]}
-          checkboxSelection
-          disableSelectionOnClick
-          getRowId={getRowId}
-          onSelectionModelChange={onSelectionModelChange}
-        />
-      </Box>
-      <JSONDialog title="RuleSet JSON" jsonData={ruleInfo} open={jsonDialogOpen} close={() => {setJsonDialogOpen(false)}} data={{}}/>
+    <Box sx={{ flexGrow: 1, height: "100%" }}>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        pageSize={20}
+        rowsPerPageOptions={[20]}
+        checkboxSelection
+        disableSelectionOnClick
+        getRowId={getRowId}
+        onSelectionModelChange={onSelectionModelChange}
+      />
+      <JSONDialog title="RuleSet JSON" jsonData={ruleInfo} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} />
+      <RuleSetDetailsDialog ruleSet={ruleInfo} open={ruleSetDetailsDialogOpen} close={(newRuleSet) => {
+        setRuleSetDetailsDialogOpen(false)
+        if (newRuleSet) {
+          DAW.patchRuleSet(newRuleSet)
+        }
+      }} />
     </Box>
   )
 }

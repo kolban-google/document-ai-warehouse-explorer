@@ -171,6 +171,25 @@ async function queryDocuments(documentQuery) {
   return response.result;
 } // listDocuments
 
+/**
+ * options.clean === true -> Clean the results.
+ * @param {*} options 
+ * @returns 
+ */
+async function getFolderDocuments(options) {
+  const folderQueryResult = await queryDocuments({"query":"","fileTypeFilter":{"fileType":"FOLDER"}})
+  let result = folderQueryResult
+  if (options !== null && options !== undefined) {
+    if (options.clean === true) {
+      result = [];
+      folderQueryResult.matchingDocuments.forEach((item) => {
+        result.push(item.document)
+      })
+    }
+  }
+  return result
+} // getFolderDocuments
+
 async function getDocument(document) {
   const params = {
     "name": document
@@ -292,10 +311,9 @@ async function deleteRuleSet(document) {
  *   ]
  * }
  */
-async function rulesCreate(ruleSet) {
+async function createRuleSet(ruleSet) {
   ruleSet.parent = getParent()
   const response = await gapi.client.contentwarehouse.projects.locations.ruleSets.create(ruleSet);
-  debugger;
   return response.result;
 } // rulesCreate
 
@@ -304,8 +322,8 @@ async function rulesCreate(ruleSet) {
 //
 const exports = {
   setProjectId, setProjectNumber, setUser,
-  listRules, getRuleSetId, getRuleSet, deleteRuleSet, rulesCreate,
+  listRules, getRuleSetId, getRuleSet, deleteRuleSet, createRuleSet,
   getSchemaId, getSchema, createSchema, deleteSchema, patchSchema, listSchemas,
-  getDocumentId, queryDocuments, createDocument, deleteDocument, getDocument, patchDocument, getPropertyValue, setPropertyValue
+  getDocumentId, queryDocuments, createDocument, deleteDocument, getDocument, getFolderDocuments, patchDocument, getPropertyValue, setPropertyValue
 }
 export default exports;
