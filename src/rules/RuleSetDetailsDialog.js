@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 */
-import React from 'react';
+import React from 'react'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
-import PropTypes from 'prop-types';
-import JSONDialog from '../JSONDialog';
-import RulesDetails from './RuleSetDetails';
+import PropTypes from 'prop-types'
+import JSONDialog from '../JSONDialog'
+import RulesDetails from './RuleSetDetails'
 
 /**
  * Display a dialog that shows the current schema details or create new schema details.
@@ -58,26 +58,20 @@ function RulesDetailsDialog(props) {
         <RulesDetails ruleSet={ruleSet} onChange={onRuleSetChange} create={props.create} />
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>
-          Show
-        </Button>
-        <Button variant="contained" color="primary" onClick={() => {props.close(ruleSet) }}>
-          Apply
-        </Button>
-        <Button variant="contained" color="primary" onClick={() => {props.close(null) }}>
-          Cancel
-        </Button>
+        <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>Show</Button>
+        <Button variant="contained" color="primary" onClick={() => {props.close(ruleSet) }}>Apply</Button>
+        <Button variant="contained" color="primary" onClick={() => {props.close(null) }}>Cancel</Button>
       </DialogActions>
       <JSONDialog title="Rules Details" jsonData={ruleSet} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} />
     </Dialog>
   );
-}
+} // RulesDetailsDialog
 
 RulesDetailsDialog.propTypes = {
-  'open': PropTypes.bool.isRequired,
-  'close': PropTypes.func.isRequired,
-  'ruleSet': PropTypes.object.isRequired,
-  'create': PropTypes.bool
+  "open": PropTypes.bool.isRequired,
+  "close": PropTypes.func.isRequired,
+  "ruleSet": PropTypes.object.isRequired,
+  "create": PropTypes.bool
 }
 
 export default RulesDetailsDialog;

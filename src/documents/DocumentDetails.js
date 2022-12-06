@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 */
-import React from 'react';
+import React from 'react'
 import { TextField, FormGroup, Box, FormControlLabel, Checkbox, Card, CardContent, MenuItem } from '@mui/material'
-import PropTypes from 'prop-types';
-import _ from 'lodash';
+import PropTypes from 'prop-types'
+import _ from 'lodash'
 import DAW from '../daw'
-import SchemaSelection from '../schemas/SchemaSelection';
+import SchemaSelection from '../schemas/SchemaSelection'
 
 /**
  * Display the details of a document
@@ -87,64 +87,43 @@ function DocumentDetails(props) {
     schema.propertyDefinitions.forEach((currentPropertyDefinition) => {
       const value = DAW.getPropertyValue(currentPropertyDefinition.name, props.document)
       propertyDefinitionsComponents.push(
-        <Card key={currentPropertyDefinition.name}>
+            <TextField key={currentPropertyDefinition.name} fullWidth value={value !== undefined ? value : ""} label={currentPropertyDefinition.displayName} onChange={(evt) => { onPropertyChange(evt, currentPropertyDefinition) }} />
+      )
+    })
+  }
+  /*
+          <Card key={currentPropertyDefinition.name}>
           <CardContent>
             <TextField fullWidth value={value !== undefined ? value : ""} label={currentPropertyDefinition.displayName} onChange={(evt) => { onPropertyChange(evt, currentPropertyDefinition) }} />
           </CardContent>
         </Card>
-      )
-    })
-  }
+        */
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", rowGap: 2 }}>
       <TextField value={props.document.displayName} label="Display Name" variant="outlined" error={props.document.displayName.length === 0} onChange={onTextFieldChange.bind(this, "displayName")} margin="dense" />
       <SchemaSelection schemaMap={props.schemaMap} disabled={props.create !== true} value={props.document.documentSchemaName} onChange={onSchemaNameChange} />
-      {!props.create ?
-        <TextField value={props.document.name} label="Name" variant="outlined" disabled margin="dense" />
-        : null}
+      {!props.create && <TextField value={props.document.name} label="Name" variant="outlined" disabled margin="dense" />}
       <TextField value={props.document.referenceId ? props.document.referenceId : ""} label="Reference ID" onChange={onTextFieldChange.bind(this, "referenceId")} variant="outlined" />
-
       <TextField value={props.document.title ? props.document.title : ""} label="Title" variant="outlined" onChange={onTextFieldChange.bind(this, "title")} />
       <TextField value={props.document.displayUri ? props.document.displayUri : ""} label="Display URI" variant="outlined" onChange={onTextFieldChange.bind(this, "displayUri")} />
-
       <TextField value={props.document.structuredContentUri ? props.document.structuredContentUri : ""} label="Structured Content URI" variant="outlined" onChange={onTextFieldChange.bind(this, "structuredContentUri")} />
-      {!props.create ?
-        <TextField value={props.document.updateTime} disabled label="Update Time" variant="outlined" />
-        : null}
-      {!props.create ?
-        <TextField value={props.document.createTime} disabled label="Create Time" variant="outlined" />
-        : null}
-      {!props.create ?
-        <TextField value={props.document.creator} disabled label="Creator" variant="outlined" />
-        : null}
-      {!props.create ?
-        <TextField value={props.document.updater} disabled label="Updater" variant="outlined" />
-        : null}
+      {!props.create && <TextField value={props.document.updateTime} disabled label="Update Time" variant="outlined" />}
+      {!props.create && <TextField value={props.document.createTime} disabled label="Create Time" variant="outlined" />}
+      {!props.create && <TextField value={props.document.creator} disabled label="Creator" variant="outlined" />}
+      {!props.create && <TextField value={props.document.updater} disabled label="Updater" variant="outlined" />}
       <TextField
         select
         disabled={props.create !== true}
         label="Document File Type"
         value={props.document.rawDocumentFileType?props.document.rawDocumentFileType:""}
         onChange={onTextFieldChange.bind(this, "rawDocumentFileType")}>
-        <MenuItem key="key1" value="RAW_DOCUMENT_FILE_TYPE_UNSPECIFIED">
-          Unspecified
-        </MenuItem>
-        <MenuItem key="key2" value="RAW_DOCUMENT_FILE_TYPE_PDF">
-          Adobe PDF format
-        </MenuItem>
-        <MenuItem key="key3" value="RAW_DOCUMENT_FILE_TYPE_DOCX">
-          Microsoft word format
-        </MenuItem>
-        <MenuItem key="key4" value="RAW_DOCUMENT_FILE_TYPE_XLSX">
-          Microsoft Excel format
-        </MenuItem>
-        <MenuItem key="key5" value="RAW_DOCUMENT_FILE_TYPE_PPTX">
-          Microsoft Powerpoint format
-        </MenuItem>
-        <MenuItem key="key6" value="RAW_DOCUMENT_FILE_TYPE_TEXT">
-          UTF-8 encoded text format
-        </MenuItem>
+        <MenuItem key="RAW_DOCUMENT_FILE_TYPE_UNSPECIFIED" value="RAW_DOCUMENT_FILE_TYPE_UNSPECIFIED">Unspecified</MenuItem>
+        <MenuItem key="RAW_DOCUMENT_FILE_TYPE_PDF" value="RAW_DOCUMENT_FILE_TYPE_PDF">Adobe PDF format</MenuItem>
+        <MenuItem key="RAW_DOCUMENT_FILE_TYPE_DOCX" value="RAW_DOCUMENT_FILE_TYPE_DOCX">Microsoft word format</MenuItem>
+        <MenuItem key="RAW_DOCUMENT_FILE_TYPE_XLSX" value="RAW_DOCUMENT_FILE_TYPE_XLSX">Microsoft Excel format</MenuItem>
+        <MenuItem key="RAW_DOCUMENT_FILE_TYPE_PPTX" value="RAW_DOCUMENT_FILE_TYPE_PPTX">Microsoft Powerpoint format</MenuItem>
+        <MenuItem key="RAW_DOCUMENT_FILE_TYPE_TEXT" value="RAW_DOCUMENT_FILE_TYPE_TEXT">UTF-8 encoded text format</MenuItem>
       </TextField>
       <FormGroup>
         <FormControlLabel control={<Checkbox disabled={props.create !== true} checked={props.document.textExtractionDisabled === true} />} label="Text Extraction Disabled" onChange={onTextExtractionDisabledChange} />

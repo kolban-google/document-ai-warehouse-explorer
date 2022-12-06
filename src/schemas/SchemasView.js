@@ -16,11 +16,15 @@ import React from 'react';
 import DAW from '../daw.js'
 import { Box, Button } from '@mui/material'
 //import PropTypes from 'prop-types';
+import SchemasGrid from './SchemasGrid.js';
+import SchemaDetailsDialog from './SchemaDetailsDialog.js';
+import ErrorDialog from '../ErrorDialog.js';
+//
+// Icons
+//
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import SchemasGrid from './SchemasGrid.js';
-import SchemaDetailsDialog from './SchemaDetailsDialog.js';
 
 
 /**
@@ -31,16 +35,26 @@ import SchemaDetailsDialog from './SchemaDetailsDialog.js';
 function SchemasView(props) {
   const [searchResults, setSearchResults] = React.useState(null);
   const [selection, setSelection] = React.useState([]);
-  //const [schemas, setSchemas] = React.useState(new Map());
   const [schemaDetailsDialogOpen, setSchemaDetailsDialogOpen] = React.useState(false);
-  //const [newDocumentSchema, setNewDocumentSchema] = React.useState({"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []})  
+  const [error, setError] = React.useState({ "message": "No Error" })
+  const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
 
-  const templateDocumentSchema = {"name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: []}
+  const templateDocumentSchema = { "name": "", displayName: "", documentIsFolder: false, updateTime: "", createTime: "", description: "", propertyDefinitions: [] }
 
   async function onRefresh() {
-    const results = await DAW.listSchemas();
-    setSearchResults(results);
+    try {
+      const results = await DAW.listSchemas();
+      setSearchResults(results);
+    }
+    catch (e) {
+      showError(e.result.error)
+    }
   } // onRefresh
+
+  function showError(e) {
+    setError(e)
+    setErrorDialogOpen(true)
+  } // showError
 
   function onSelectionChanged(selection) {
     setSelection(selection)
@@ -52,31 +66,42 @@ function SchemasView(props) {
   }
 
   async function createSchema(newSchema) {
-    await DAW.createSchema(newSchema)
-    onRefresh()
-  }
+    try {
+      await DAW.createSchema(newSchema)
+      onRefresh()
+    }
+    catch (e) {
+      showError(e.result.error)
+    }
+  } // createSchema
 
   async function onDelete() {
-    for (let i=0; i<selection.length; i++) {
-      await DAW.deleteSchema(selection[i])
+    try {
+      for (let i = 0; i < selection.length; i++) {
+        await DAW.deleteSchema(selection[i])
+      }
+      onRefresh()
     }
-    onRefresh()
+    catch (e) {
+      showError(e.result.error)
+    }
   } // onDelete
 
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
-      <SchemasGrid searchResults={searchResults} onSelectionChanged={onSelectionChanged}/>
+      <SchemasGrid searchResults={searchResults} onSelectionChanged={onSelectionChanged} />
       <Box sx={{ display: "flex", columnGap: 1 }}>
-      <Button onClick={onDelete} variant="contained" disabled={selection.length === 0} endIcon={<DeleteForeverIcon/>}>Delete</Button>
-      <Button onClick={onCreate} variant="contained" endIcon={<AddCircleIcon/>}>Create</Button>
-      <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon/>}>Refresh</Button>
+        <Button onClick={onDelete} variant="contained" disabled={selection.length === 0} endIcon={<DeleteForeverIcon />}>Delete</Button>
+        <Button onClick={onCreate} variant="contained" endIcon={<AddCircleIcon />}>Create</Button>
+        <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon />}>Refresh</Button>
       </Box>
       <SchemaDetailsDialog documentSchema={templateDocumentSchema} open={schemaDetailsDialogOpen} close={(newSchema) => {
         setSchemaDetailsDialogOpen(false)
         if (newSchema) {
           createSchema(newSchema)
         }
-      }} create={true}/>
+      }} create={true} />
+      <ErrorDialog open={errorDialogOpen} close={() => { setErrorDialogOpen(false) }} error={error} />
     </Box>
   )
 } // DocumentsView

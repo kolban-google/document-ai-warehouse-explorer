@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 */
-import React from 'react';
+import React from 'react'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
-import PropTypes from 'prop-types';
-import SchemaDetails from './SchemaDetails';
-import JSONDialog from '../JSONDialog';
+import PropTypes from 'prop-types'
+import SchemaDetails from './SchemaDetails'
+import JSONDialog from '../JSONDialog'
 
 /**
  * Display a dialog that shows the current schema details or create new schema details.
@@ -60,15 +60,9 @@ function SchemaDetailsDialog(props) {
         <SchemaDetails documentSchema={documentSchema} onChange={onDocumentSchemaChange} create={props.create} />
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>
-          Show
-        </Button>
-        <Button variant="contained" color="primary" onClick={() => {needsUpdated.current=true; props.close(documentSchema) }}>
-          Apply
-        </Button>
-        <Button variant="contained" color="primary" onClick={() => {needsUpdated.current=true; props.close(null) }}>
-          Cancel
-        </Button>
+        <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>Show</Button>
+        <Button variant="contained" color="primary" onClick={() => {needsUpdated.current=true; props.close(documentSchema) }}>Apply</Button>
+        <Button variant="contained" color="primary" onClick={() => {needsUpdated.current=true; props.close(null) }}>Cancel</Button>
       </DialogActions>
       <JSONDialog title="Schema Details" jsonData={documentSchema} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} />
     </Dialog>

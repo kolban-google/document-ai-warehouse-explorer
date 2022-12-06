@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 */
-import React from 'react';
+import React from 'react'
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material'
-import PropTypes from 'prop-types';
-import JSONDialog from '../JSONDialog';
-import Query from './Query';
+import PropTypes from 'prop-types'
+import JSONDialog from '../JSONDialog'
+import Query from './Query'
 
 /**
  * Display the settings
@@ -47,17 +47,9 @@ function QueryDialog(props) {
         <Query schemaMap={props.schemaMap} documentQuery={documentQuery} onChange={documentQueryOnChange} />
       </DialogContent>
       <DialogActions>
-        {props.showQuery ?
-          <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>
-            Show
-          </Button>
-          : null}
-        <Button variant="contained" color="primary" onClick={() => { props.close(documentQuery) }}>
-          Apply
-        </Button>
-        <Button variant="contained" color="primary" onClick={() => { props.close(null) }}>
-          Cancel
-        </Button>
+        {props.showQuery===true && <Button variant="contained" color="primary" onClick={() => { setJsonDialogOpen(true) }}>Show</Button>}
+        <Button variant="contained" color="primary" onClick={() => { props.close(documentQuery) }}>Apply</Button>
+        <Button variant="contained" color="primary" onClick={() => { props.close(null) }}>Cancel</Button>
       </DialogActions>
       <JSONDialog title="Query JSON" jsonData={documentQuery} open={jsonDialogOpen} close={() => { setJsonDialogOpen(false) }} data={{}} />
     </Dialog>
@@ -65,9 +57,9 @@ function QueryDialog(props) {
 }
 
 QueryDialog.propTypes = {
-  'open': PropTypes.bool.isRequired,
-  'documentQuery': PropTypes.object.isRequired,
-  'close': PropTypes.func.isRequired,
+  "open": PropTypes.bool.isRequired,
+  "documentQuery": PropTypes.object.isRequired,
+  "close": PropTypes.func.isRequired,
   "showQuery": PropTypes.bool
 }
 

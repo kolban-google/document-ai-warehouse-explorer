@@ -83,12 +83,12 @@ function RulesGrid(props) {
     if (props.onSelectionChanged) {
       props.onSelectionChanged(selectionArray)
     }
-  }
+  } // onSelectionModelChange
 
   function getRowId(row) {
-    //debugger;
     return row.name;
-  }
+  } // getRowId
+
   let rows = [];
   if (props.rules) {
     rows = props.rules;

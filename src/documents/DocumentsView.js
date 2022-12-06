@@ -18,13 +18,14 @@ import { Box, Button } from '@mui/material'
 //import PropTypes from 'prop-types';
 import DocumentsGrid from './DocumentsGrid.js';
 import QueryDialog from './QueryDialog.js';
+import DocumentDetailsDialog from './DocumentDetailsDialog.js';
+import ErrorDialog from '../ErrorDialog'
 // Icons
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DocumentDetailsDialog from './DocumentDetailsDialog.js';
-import ErrorDialog from '../ErrorDialog'
+
 
 const newDocumentTemplate = {
   "name": "",
@@ -43,9 +44,9 @@ const newDocumentTemplate = {
 }
 
 function DocumentsView(props) {
-  const [searchResults, setSearchResults] = React.useState({});
-  const [selection, setSelection] = React.useState([]);
-  const [schemaMap, setSchemaMap] = React.useState(new Map());
+  const [searchResults, setSearchResults] = React.useState({})
+  const [selection, setSelection] = React.useState([])
+  const [schemaMap, setSchemaMap] = React.useState(new Map())
   const [documentQuery, setDocumentQuery] = React.useState({ "query": "" })
   const [queryDialogOpen, setQueryDialogOpen] = React.useState(false)
   const [errorDialogOpen, setErrorDialogOpen] = React.useState(false)
@@ -53,7 +54,7 @@ function DocumentsView(props) {
   const [documentDetailsDialogOpen, setDocumentDetailsDialogOpen] = React.useState(false)
   const [newDocument, setNewDocument] = React.useState(newDocumentTemplate)
 
-  const initied = React.useRef(false);
+  const initied = React.useRef(false)
 
 
   // We want a first time initialization
@@ -94,10 +95,15 @@ function DocumentsView(props) {
    * Handle document deletions
    */
   async function onDelete() {
-    for (let i = 0; i < selection.length; i++) {
-      await DAW.deleteDocument(selection[i])
+    try {
+      for (let i = 0; i < selection.length; i++) {
+        await DAW.deleteDocument(selection[i])
+      }
+      onRefresh()
     }
-    onRefresh()
+    catch (e) {
+      showError(e.result.error)
+    }
   } // onDelete
 
   /**
@@ -105,10 +111,15 @@ function DocumentsView(props) {
    * @param {*} newDocument 
    */
   function createDocument(newDocument) {
-    // Delete any fields that shouldn't be present
-    delete newDocument.updateTime
-    delete newDocument.createTime
-    DAW.createDocument(newDocument).then(onRefresh)
+    try {
+      // Delete any fields that shouldn't be present
+      delete newDocument.updateTime
+      delete newDocument.createTime
+      DAW.createDocument(newDocument).then(onRefresh)
+    }
+    catch (e) {
+      showError(e.result.error)
+    }
   } // createDocument
 
   return (

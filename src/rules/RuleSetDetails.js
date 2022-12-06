@@ -39,25 +39,6 @@ function RulesDetails(props) {
     onChange(newRuleSet)
   } // onRuleChange
 
-
-  function onDescriptionChange(evt) {
-    const newDocumentSchema = _.cloneDeep(props.documentSchema)
-    newDocumentSchema.description = evt.target.value
-    onChange(newDocumentSchema)
-  } // onDescriptionChange
-
-  function onDisplayNameChange(evt) {
-    const newDocumentSchema = _.cloneDeep(props.documentSchema)
-    newDocumentSchema.displayName = evt.target.value
-    onChange(newDocumentSchema)
-  } // onDisplayNameChange
-
-  function onDocumentIsFolderChange(evt) {
-    const newDocumentSchema = _.cloneDeep(props.documentSchema)
-    newDocumentSchema.documentIsFolder = evt.target.checked
-    onChange(newDocumentSchema)
-  } // onDocumentIsFolderChange
-
   /**
    * Called when the user requests the addition of a new rule.
    */
@@ -98,7 +79,7 @@ function RulesDetails(props) {
   if (props.ruleSet.rules) {
     props.ruleSet.rules.forEach((currentRule, index) => {
       ruleSetComponents.push(
-        <Card key={index}>
+        <Card key={index} variant="outlined">
           <CardContent>
             <Box sx={{ width: "100%" }} flexGrow={1} display="flex" gap="10px" flexDirection="row">
               <RuleDetails rule={currentRule} create={props.create} onChange={(newRule) => { onRuleChange(newRule, index) }} />
@@ -113,7 +94,7 @@ function RulesDetails(props) {
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", rowGap: 2 }}>
       {!props.create === true && <TextField value={props.ruleSet.name} label="Name" variant="outlined" disabled margin="dense" onChange={onTextFieldChange.bind(this, "name")} />}
       <TextField value={props.ruleSet.description} label="Description" margin="dense" variant="outlined" onChange={onTextFieldChange.bind(this, "description")} />
       <TextField value={props.ruleSet.source} label="Source" variant="outlined" onChange={onTextFieldChange.bind(this, "source")} />

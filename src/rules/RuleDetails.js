@@ -16,8 +16,11 @@ import React from 'react';
 import { TextField, Box, Card, CardContent, Button, IconButton, MenuItem } from '@mui/material'
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ActionDetails from './ActionDetails';
+//
+// Icons
+//
+import DeleteIcon from '@mui/icons-material/Delete';
 
 /**
  * Display the details of a RuleSet allowing the user to change the RuleSet.
@@ -31,7 +34,7 @@ function RuleDetails(props) {
 
   function onChange(newRule) {
     props.onChange(newRule)
-  }
+  } // onChange
 
   /**
  * When a text field changes, it sends an event that indicates the new value.
@@ -90,9 +93,8 @@ function RuleDetails(props) {
   if (props.rule.actions) {
     props.rule.actions.forEach((currentAction, index) => {
       actionsComponents.push(
-        <Card key={index}>
+        <Card key={index} variant="outlined">
           <CardContent>
-
             <Box sx={{ width: "100%" }} flexGrow={1} display="flex" gap="10px" flexDirection="row">
             <ActionDetails action={currentAction} create={props.create} onChange={(newAction) => {onActionChange(newAction, index)}}/>
               <IconButton onClick={() => { onDeleteAction(index) }} disabled={!props.create}>
@@ -106,14 +108,10 @@ function RuleDetails(props) {
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", rowGap: 1, width: "100%" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", rowGap: 2, width: "100%" }}>
       <TextField value={props.rule.description} label="Description" variant="outlined" margin="dense" onChange={onTextFieldChange.bind(this, "description")} />
       {props.create !== true && <TextField value={props.rule.ruleId} label="Rule ID" margin="dense" disabled variant="outlined" />}
-      <TextField
-        select
-        label="Trigger Type"
-        value={props.rule.triggerType}
-        onChange={onTextFieldChange.bind(this, "triggerType")}>
+      <TextField select label="Trigger Type" value={props.rule.triggerType} onChange={onTextFieldChange.bind(this, "triggerType")}>
         <MenuItem key="ON_CREATE" value="ON_CREATE">On Create</MenuItem>
         <MenuItem key="ON_UPDATE" value="ON_UPDATE">On Update</MenuItem>
       </TextField>

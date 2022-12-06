@@ -17,30 +17,57 @@ import DAW from '../daw.js'
 import { Box, Button } from '@mui/material'
 //import PropTypes from 'prop-types';
 import RulesGrid from './RulesGrid.js';
+import RulesDetailsDialog from './RuleSetDetailsDialog.js';
+import ErrorDialog from '../ErrorDialog.js';
+//
+// Icons
+//
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import RulesDetailsDialog from './RuleSetDetailsDialog.js';
+
 
 function RulesView(props) {
   const [rules, setRules] = React.useState([]);
   const [selection, setSelection] = React.useState([]);
   const [rulesDetailsDialogOpen, setRulesDetailsDialogOpen] = React.useState(false);
-  //const [templateRuleSet, setTemplateRuleSet] = React.useState({"name": "", "description": "", "source": "", "rules": []})  
+  const [error, setError] = React.useState({ "message": "No Error" })
+  const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
 
-  const templateRuleSet = {"name": "", "description": "", "source": "", "rules": []}
+  const templateRuleSet = { "name": "", "description": "", "source": "", "rules": [] }
 
+  /**
+   * Refresh the rules.  Make a call to DWH to get the rules and change the state of the
+   * component to remember the current rules.
+   */
   async function onRefresh() {
-    console.log("Clicked")
-    const results = await DAW.listRules();
-    setRules(results.ruleSets)
-  } // onRefresh
-
-  async function onDelete() {
-    for (let i = 0; i < selection.length; i++) {
-      await DAW.deleteRuleSet(selection[i])
+    try {
+      const results = await DAW.listRules();
+      setRules(results.ruleSets)
     }
-    onRefresh()
+    catch (e) {
+      showError(e.result.error)
+    }
+  } // onRefresh
+  
+  function showError(e) {
+    setError(e)
+    setErrorDialogOpen(true)
+  } // showError
+
+  /**
+   * Delete the currently selected rules.
+   */
+  async function onDelete() {
+    try {
+      for (let i = 0; i < selection.length; i++) {
+        await DAW.deleteRuleSet(selection[i])
+      }
+      onRefresh()
+    }
+    catch (e) {
+      showError(e.result.error)
+    }
   } // onDelete
 
   function onSelectionChanged(selection) {
@@ -54,6 +81,17 @@ function RulesView(props) {
     setRulesDetailsDialogOpen(true)
   } // onCreate
 
+  function onCreateNewRuleSet(newRuleSet) {
+    try {
+      setRulesDetailsDialogOpen(false)
+      if (newRuleSet) {
+        DAW.createRuleSet(newRuleSet)
+      }
+    } catch (e) {
+      showError(e.result.error)
+    }
+  } // onCreateNewRuleSet
+
   return (
     <Box sx={{ height: "100%", display: "flex", flexDirection: "column", rowGap: 1 }}>
       <RulesGrid rules={rules} onSelectionChanged={onSelectionChanged} />
@@ -62,12 +100,8 @@ function RulesView(props) {
         <Button onClick={onCreate} variant="contained" endIcon={<AddCircleIcon />}>Create</Button>
         <Button onClick={onRefresh} variant="contained" endIcon={<RefreshIcon />}>Refresh</Button>
       </Box>
-      <RulesDetailsDialog ruleSet={templateRuleSet} open={rulesDetailsDialogOpen} close={(newRuleSet) => {
-        setRulesDetailsDialogOpen(false)
-        if (newRuleSet) {
-          DAW.createRuleSet(newRuleSet)
-        }
-      }} create={true}/>
+      <RulesDetailsDialog ruleSet={templateRuleSet} open={rulesDetailsDialogOpen} close={onCreateNewRuleSet} create={true} />
+      <ErrorDialog open={errorDialogOpen} close={() => { setErrorDialogOpen(false) }} error={error} />
     </Box>
   )
 }

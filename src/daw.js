@@ -61,7 +61,10 @@ async function listSchemas(options) {
   const params = {
     "parent": getParent()
   }
+
+  // The following can throw an exception
   const response = await gapi.client.contentwarehouse.projects.locations.documentSchemas.list(params);
+
   const result = response.result;
   if (!options || !options.makeMap === true) {
     return result
@@ -101,19 +104,19 @@ async function deleteSchema(documentSchemaName) {
     "name": documentSchemaName
   }
   await gapi.client.contentwarehouse.projects.locations.documentSchemas.delete(params);
-}
+} // deleteSchema
 
 async function patchSchema(documentSchema) {
   const newDocumentSchema = _.cloneDeep(documentSchema)
   delete newDocumentSchema.updateTime
   delete newDocumentSchema.createTime
   const params = {
-    name: documentSchema.name,
-    documentSchema: documentSchema
+    "name": documentSchema.name,
+    "documentSchema": documentSchema
   }
   const response = await gapi.client.contentwarehouse.projects.locations.documentSchemas.patch(params);
   return response.result
-}
+} // patchSchema
 
 //
 // DOCUMENTS

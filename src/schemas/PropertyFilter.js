@@ -42,7 +42,7 @@ function PropertyFilter(props) {
       <TextField fullWidth value={props.value.condition} label="Condition" variant="standard" onChange={onConditionChange} error={props.value.condition.trim().length === 0}/>
     </FormGroup>
   )
-} // SchemaSelection
+} // PropertyFilter
 
 PropertyFilter.propTypes = {
   "schemaMap": PropTypes.object.isRequired,

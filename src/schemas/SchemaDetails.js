@@ -17,6 +17,9 @@ import { TextField, FormGroup, Box, FormControlLabel, Checkbox, Card, CardConten
 import PropTypes from 'prop-types';
 import PropertyDefinition from './PropertyDefinition.js';
 import _ from 'lodash';
+//
+// Icons
+//
 import DeleteIcon from '@mui/icons-material/Delete';
 
 /**
@@ -81,9 +84,9 @@ function SchemaDetails(props) {
   if (props.documentSchema.propertyDefinitions) {
     props.documentSchema.propertyDefinitions.forEach((currentPropertyDefinition, index) => {
       propertyDefinitionsComponents.push(
-        <Card key={index}>
+        <Card key={index} variant="outlined">
           <CardContent>
-            <Box sx={{ width: "100%" }} flexGrow={1} display="flex" gap="10px" flexDirection="row">
+            <Box sx={{ width: "100%" }} flexGrow={2} display="flex" gap="10px" flexDirection="row">
               <PropertyDefinition create={props.create} propertyDefinition={currentPropertyDefinition} onChange={(propertyDefinition) => {
                 onPropertyDefinitionChange(propertyDefinition, index)
               }} />

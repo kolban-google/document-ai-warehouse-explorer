@@ -13,9 +13,9 @@
 # limitations under the License.
 */
 
-import React from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import PropTypes from 'prop-types';
+import React from 'react'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import PropTypes from 'prop-types'
 /**
  * props
  * * open
@@ -48,8 +48,8 @@ function AboutDialog(props) {
 } // AboutDialog
 
 AboutDialog.propTypes = {
-  'open': PropTypes.bool.isRequired,
-  'close': PropTypes.func.isRequired
+  "open": PropTypes.bool.isRequired,
+  "close": PropTypes.func.isRequired
 }
 
 export default AboutDialog

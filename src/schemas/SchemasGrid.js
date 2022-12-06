@@ -17,9 +17,11 @@ import DAW from '../daw.js'
 import { Box, IconButton } from '@mui/material'
 import PropTypes from 'prop-types';
 import { DataGrid } from '@mui/x-data-grid';
-
 import JSONDialog from '../JSONDialog.js';
 import SchemaDetailsDialog from './SchemaDetailsDialog.js';
+//
+// Icons
+//
 import InfoIcon from '@mui/icons-material/Info';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -89,7 +91,6 @@ function SchemasGrid(props) {
   }
 
   return (
-
     <Box sx={{flexGrow: 1, height: "100%"}}>
       <DataGrid
         rows={rows}

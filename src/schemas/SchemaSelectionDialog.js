@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 */
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React from 'react'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField,  Button} from '@mui/material'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 function SchemaSelectionDialog(props) {
 
@@ -33,18 +32,16 @@ function SchemaSelectionDialog(props) {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="primary" onClick={() => { props.close({ ...props.settings, projectId, projectNumber, user }) }}>
-          Close
-        </Button>
+        <Button variant="contained" color="primary" onClick={() => { props.close({ ...props.settings, projectId, projectNumber, user }) }}>Close</Button>
       </DialogActions>
     </Dialog>
   );
 }
 
 SchemaSelectionDialog.propTypes = {
-  'open': PropTypes.bool.isRequired,
-  'close': PropTypes.func.isRequired,
-  'settings': PropTypes.object.isRequired
+  "open": PropTypes.bool.isRequired,
+  "close": PropTypes.func.isRequired,
+  "settings": PropTypes.object.isRequired
 }
 
 export default SchemaSelectionDialog;

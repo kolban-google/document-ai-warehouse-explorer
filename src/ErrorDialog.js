@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 */
-import React from 'react';
+import React from 'react'
 import { Dialog,DialogActions,DialogContent, DialogContentText,DialogTitle, Button } from '@mui/material'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
 
 /**
  * Display an error.
@@ -48,13 +48,11 @@ function ErrorDialog(props) {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="primary" onClick={props.close}>
-          Close
-        </Button>
+        <Button variant="contained" color="primary" onClick={props.close}>Close</Button>
       </DialogActions>
     </Dialog>
   );
-}
+} // ErrorDialog
 
 ErrorDialog.propTypes = {
   'open': PropTypes.bool.isRequired,

@@ -36,22 +36,26 @@ function FolderSelect(props) {
     props.onChange(evt.target.value)
   } // onChange
 
+  // If we don't know the set of folders from which to pick, we have nothing to display.
+  // Request the folders from DWH and, when the results are back, set the state of
+  // the component to know we have the folders.  This will trigger a re-render.
   if (folderDocuments === null) {
-    DAW.getFolderDocuments({clean: true}).then((result) => {setFolderDocuments(result)})
+    DAW.getFolderDocuments({ clean: true }).then((result) => { setFolderDocuments(result) })
     return
   }
+
   const menuItemsComponents = [];
   folderDocuments.forEach((folderDocument, index) => {
     menuItemsComponents.push(
-      <MenuItem key={index} value={folderDocument.name}>
-        {`${folderDocument.displayName} (${DAW.getDocumentId(folderDocument.name)})`} 
+      <MenuItem key={folderDocument.name} value={folderDocument.name}>
+        {`${folderDocument.displayName} (${DAW.getDocumentId(folderDocument.name)})`}
       </MenuItem>
     )
   })
 
   return (
     <TextField
-    sx={{flexGrow: 1}}
+      sx={{ "flexGrow": 1 }}
       select
       label="Folder"
       value={props.value}
@@ -59,7 +63,7 @@ function FolderSelect(props) {
       {menuItemsComponents}
     </TextField>
   )
-} // SchemaSelection
+} // FolderSelect
 
 FolderSelect.propTypes = {
   "onChange": PropTypes.func.isRequired,

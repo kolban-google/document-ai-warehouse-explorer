@@ -23,21 +23,42 @@ import ReactJson from 'react-json-view'
  */
 function JSONDialog(props) {
 
+  const [collapsed, setCollapsedLevel] = React.useState(1)
+
+  function onClose() {
+    setCollapsedLevel(1)
+    props.close()
+  }
+
   function onCopy() {
     navigator.clipboard.writeText(JSON.stringify(props.jsonData), null, 2)
+  }
+
+  function onExpand() {
+    setCollapsedLevel(10)
+  }
+
+  function onCollapse() {
+    setCollapsedLevel(1)
   }
 
   return (
     <Dialog open={props.open}>
       <DialogTitle>{props.title}</DialogTitle>
       <DialogContent>
-        <ReactJson src={props.jsonData} displayDataTypes={false} displayObjectSize={false} enableClipboard={false} collapsed={1} />
+        <ReactJson src={props.jsonData} displayDataTypes={false} displayObjectSize={false} enableClipboard={false} collapsed={collapsed} displayArrayKey={false}/>
       </DialogContent>
       <DialogActions>
+      <Button variant="contained" color="primary" onClick={onExpand}>
+          Expand all
+        </Button>
+        <Button variant="contained" color="primary" onClick={onCollapse}>
+          Collapse all
+        </Button>
         <Button variant="contained" color="primary" onClick={onCopy}>
           Copy
         </Button>
-        <Button variant="contained" color="primary" onClick={props.close}>
+        <Button variant="contained" color="primary" onClick={onClose}>
           Close
         </Button>
       </DialogActions>
